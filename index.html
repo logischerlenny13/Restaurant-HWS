@@ -6,21 +6,22 @@
 <title>Bestellsystem</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#1f2420;
-    --paper:#eef0e6;
-    --paper-2:#e2e5d6;
-    --slip:#fbfbf5;
-    --line:#1f2420;
-    --mustard:#c98a1c;
-    --mustard-dark:#a86f10;
-    --sage:#4c6b52;
-    --rust:#a8461c;
-    --muted:#6b7268;
-    --radius:2px;
-    --shadow:0 2px 0 rgba(31,36,32,0.15);
+    /* Edles Dark Theme mit Gold-Akzenten */
+    --ink: #f0eadd;
+    --paper: #0a0a0a;
+    --paper-2: #141414;
+    --slip: #1a1a1a;
+    --line: #333333;
+    --mustard: #cda434;
+    --mustard-dark: #a88222;
+    --sage: #2a3b2f;
+    --rust: #69241b;
+    --muted: #888888;
+    --radius: 4px;
+    --shadow: 0 8px 30px rgba(0,0,0,0.6);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -28,236 +29,242 @@
     background:var(--paper);
     color:var(--ink);
     font-family:'Work Sans', sans-serif;
+    font-weight: 300;
     min-height:100vh;
-    background-image:
-      linear-gradient(var(--paper-2) 1px, transparent 1px);
-    background-size: 100% 40px;
   }
   h1,h2,h3{
     font-family:'Fraunces', serif;
-    font-weight:600;
+    font-weight:400;
     margin:0 0 4px 0;
-    letter-spacing:-0.01em;
+    letter-spacing:0.02em;
   }
   .eyebrow{
     font-size:11px;
     letter-spacing:0.14em;
     text-transform:uppercase;
-    color:var(--muted);
-    font-weight:600;
-    margin-bottom:2px;
+    color:var(--mustard);
+    font-weight:500;
+    margin-bottom:6px;
   }
   .screen{display:none; min-height:100vh;}
   .screen.active{display:block;}
   .topbar{
     display:flex; align-items:center; justify-content:space-between;
     padding:18px 24px;
-    border-bottom:2px solid var(--ink);
+    border-bottom:1px solid var(--line);
     background:var(--slip);
   }
   .brand{display:flex; align-items:baseline; gap:10px;}
-  .brand h1{font-size:22px;}
-  .brand .tag{font-size:12px; color:var(--muted);}
+  .brand h1{font-size:22px; color:var(--mustard);}
+  .brand .tag{font-size:12px; color:var(--muted); font-weight: 400;}
   .topbar-right{display:flex; align-items:center; gap:14px; font-size:14px;}
   .btn{
     font-family:'Work Sans', sans-serif;
-    font-weight:600;
+    font-weight:400;
     font-size:14px;
-    border:2px solid var(--ink);
+    border:1px solid var(--line);
     background:var(--slip);
     color:var(--ink);
     padding:10px 18px;
     border-radius:var(--radius);
     cursor:pointer;
-    box-shadow:var(--shadow);
-    transition:transform .08s ease;
+    box-shadow:0 2px 8px rgba(0,0,0,0.2);
+    transition:all .2s ease;
   }
-  .btn:hover{transform:translateY(-1px);}
+  .btn:hover{border-color:var(--mustard); color:var(--mustard);}
   .btn:active{transform:translateY(1px); box-shadow:none;}
-  .btn.primary{background:var(--ink); color:var(--slip);}
-  .btn.mustard{background:var(--mustard); border-color:var(--mustard-dark); color:var(--ink);}
-  .btn.sage{background:var(--sage); border-color:#33482f; color:var(--slip);}
-  .btn.rust{background:var(--rust); border-color:#7a3013; color:var(--slip);}
-  .btn.ghost{background:transparent; box-shadow:none;}
-  .btn.small{padding:6px 10px; font-size:12px;}
+  .btn.primary{background:var(--mustard); color:var(--paper); border:none;}
+  .btn.primary:hover{background:var(--mustard-dark); color:var(--paper);}
+  .btn.mustard{background:var(--mustard); color:var(--paper); border:none;}
+  .btn.mustard:hover{background:var(--mustard-dark);}
+  .btn.sage{background:var(--sage); border:1px solid #3c5443; color:var(--ink);}
+  .btn.rust{background:var(--rust); border:1px solid #8f3428; color:var(--ink);}
+  .btn.ghost{background:transparent; box-shadow:none; border-color:transparent;}
+  .btn.ghost:hover{background:var(--paper-2); border-color:var(--line);}
+  .btn.small{padding:6px 12px; font-size:12px;}
   .btn:disabled{opacity:.4; cursor:not-allowed; transform:none;}
 
-  /* START */
-  #screen-start .wrap{
+  /* START & MITARBEITER */
+  #screen-start .wrap, #screen-staff-select .wrap {
     max-width:880px; margin:0 auto; padding:80px 24px;
     text-align:center;
+    position: relative;
   }
-  #screen-start .signature{
+  .signature{
     font-family:'Fraunces', serif; font-size:clamp(38px,7vw,64px);
-    line-height:1.02; margin-bottom:6px;
+    line-height:1.02; margin-bottom:6px; color:var(--mustard);
   }
-  #screen-start .sub{color:var(--muted); font-size:16px; margin-bottom:52px;}
+  .sub{color:var(--muted); font-size:16px; margin-bottom:52px; font-weight: 300;}
+  
+  .gear-icon {
+    position: absolute; top: 24px; right: 24px; cursor: pointer;
+    color: var(--muted); transition: color 0.2s ease;
+  }
+  .gear-icon:hover { color: var(--mustard); }
+
   .role-grid{
     display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-    gap:16px; text-align:left;
+    gap:16px; text-align:left; max-width: 600px; margin: 0 auto;
   }
   .role-card{
-    border:2px solid var(--ink); border-radius:var(--radius);
+    border:1px solid var(--line); border-radius:var(--radius);
     background:var(--slip); padding:22px 20px; cursor:pointer;
-    box-shadow:var(--shadow); position:relative; overflow:hidden;
+    box-shadow:var(--shadow); transition:all .2s ease;
   }
-  .role-card:hover{transform:translateY(-2px);}
-  .role-card .num{font-family:'Fraunces',serif; font-size:13px; color:var(--muted); margin-bottom:10px;}
-  .role-card h3{font-size:19px; margin-bottom:6px;}
-  .role-card p{font-size:13px; color:var(--muted); margin:0;}
+  .role-card:hover{transform:translateY(-2px); border-color:var(--mustard);}
+  .role-card h3{font-size:19px; margin-bottom:0; text-align: center; color:var(--mustard);}
 
-  /* generic centered login */
+  /* login */
   .login-wrap{max-width:380px; margin:80px auto; padding:0 24px;}
   .login-card{
-    border:2px solid var(--ink); background:var(--slip); border-radius:var(--radius);
-    padding:28px; box-shadow:var(--shadow);
+    border:1px solid var(--line); background:var(--slip); border-radius:var(--radius);
+    padding:32px; box-shadow:var(--shadow);
   }
-  .field{margin-bottom:16px;}
-  .field label{display:block; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; color:var(--muted);}
+  .field{margin-bottom:20px;}
+  .field label{display:block; font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; color:var(--muted);}
   .field input, .field select, .field textarea{
-    width:100%; padding:10px 12px; border:2px solid var(--ink); border-radius:var(--radius);
+    width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius);
     font-family:'Work Sans',sans-serif; font-size:15px; background:var(--paper); color:var(--ink);
+    transition: border-color 0.2s ease;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none; border-color: var(--mustard);
   }
   .field textarea{resize:vertical; min-height:70px;}
   .error-msg{color:var(--rust); font-size:13px; margin-top:8px; min-height:16px;}
-  .back-link{display:inline-block; margin-bottom:18px; font-size:13px; color:var(--muted); cursor:pointer; text-decoration:underline;}
+  .back-link{display:inline-block; margin-bottom:24px; font-size:13px; color:var(--muted); cursor:pointer; text-decoration:none; transition: color 0.2s ease;}
+  .back-link:hover{color:var(--mustard);}
 
-  .content{max-width:1100px; margin:0 auto; padding:28px 24px 80px;}
+  .content{max-width:1100px; margin:0 auto; padding:32px 24px 80px;}
 
   /* tabs */
-  .tabs{display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap;}
+  .tabs{display:flex; gap:8px; margin-bottom:32px; flex-wrap:wrap;}
   .tab-btn{
-    font-family:'Work Sans',sans-serif; font-weight:600; font-size:13px;
-    padding:9px 16px; border:2px solid var(--ink); background:transparent; color:var(--ink);
-    border-radius:var(--radius); cursor:pointer;
+    font-family:'Work Sans',sans-serif; font-weight:400; font-size:13px;
+    padding:10px 18px; border:1px solid var(--line); background:transparent; color:var(--muted);
+    border-radius:var(--radius); cursor:pointer; transition:all 0.2s ease;
   }
-  .tab-btn.active{background:var(--ink); color:var(--slip);}
+  .tab-btn:hover{color:var(--ink); border-color:var(--muted);}
+  .tab-btn.active{background:var(--slip); border-color:var(--mustard); color:var(--mustard);}
   .tab-panel{display:none;}
   .tab-panel.active{display:block;}
 
   /* menu / category */
-  .category-block{margin-bottom:36px;}
+  .category-block{margin-bottom:48px;}
   .category-title{
-    display:flex; align-items:baseline; gap:10px; margin-bottom:14px;
-    border-bottom:2px solid var(--ink); padding-bottom:6px;
+    display:flex; align-items:baseline; gap:10px; margin-bottom:20px;
+    border-bottom:1px solid var(--line); padding-bottom:10px;
   }
-  .category-title h2{font-size:20px;}
-  .item-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px;}
+  .category-title h2{font-size:22px; color:var(--mustard);}
+  .item-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:20px;}
   .item-card{
-    border:2px solid var(--ink); background:var(--slip); border-radius:var(--radius);
+    border:1px solid var(--line); background:var(--slip); border-radius:var(--radius);
     overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column;
+    transition: transform 0.2s ease;
   }
-  .item-card img{width:100%; height:130px; object-fit:cover; display:block; border-bottom:2px solid var(--ink); background:var(--paper-2);}
-  .item-card .body{padding:12px 14px; display:flex; flex-direction:column; gap:6px; flex:1;}
-  .item-card h3{font-size:16px;}
-  .item-card .desc{font-size:12.5px; color:var(--muted); flex:1;}
-  .item-card .row{display:flex; align-items:center; justify-content:space-between; margin-top:6px;}
-  .price{font-family:'Fraunces',serif; font-weight:600; font-size:16px;}
+  .item-card:hover{transform:translateY(-2px); border-color:#444;}
+  .item-card img{width:100%; height:160px; object-fit:cover; display:block; border-bottom:1px solid var(--line); background:var(--paper-2);}
+  .item-card .body{padding:16px; display:flex; flex-direction:column; gap:8px; flex:1;}
+  .item-card h3{font-size:17px;}
+  .item-card .desc{font-size:13px; color:var(--muted); flex:1; font-weight:300; line-height: 1.4;}
+  .item-card .row{display:flex; align-items:center; justify-content:space-between; margin-top:8px;}
+  .price{font-family:'Fraunces',serif; font-weight:400; font-size:18px; color:var(--mustard);}
 
   /* cart */
   .cart-bar{
-    position:sticky; bottom:0; border-top:2px solid var(--ink); background:var(--slip);
-    padding:14px 24px; display:flex; align-items:center; justify-content:space-between;
-    box-shadow:0 -2px 8px rgba(0,0,0,.06); flex-wrap:wrap; gap:10px;
+    position:sticky; bottom:0; border-top:1px solid var(--line); background:var(--slip);
+    padding:16px 24px; display:flex; align-items:center; justify-content:space-between;
+    box-shadow:0 -4px 20px rgba(0,0,0,0.5); flex-wrap:wrap; gap:12px; z-index: 100;
   }
-  .cart-items{font-size:13px; color:var(--muted);}
-  .cart-total{font-family:'Fraunces',serif; font-size:18px;}
+  .cart-items{font-size:13px; color:var(--muted); font-weight: 300;}
+  .cart-total{font-family:'Fraunces',serif; font-size:20px; color:var(--mustard);}
 
   /* order ticket */
-  .ticket-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px;}
+  .ticket-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px;}
   .ticket{
-    border:2px solid var(--ink); background:var(--slip); border-radius:var(--radius);
-    padding:16px; box-shadow:var(--shadow); position:relative;
+    border:1px solid var(--line); background:var(--slip); border-radius:var(--radius);
+    padding:20px; box-shadow:var(--shadow); position:relative;
   }
   .ticket::before{
-    content:""; position:absolute; top:0; left:0; right:0; height:4px;
-    background:repeating-linear-gradient(90deg, var(--ink) 0 8px, transparent 8px 16px);
+    content:""; position:absolute; top:0; left:0; right:0; height:3px;
+    background:var(--mustard); border-radius: var(--radius) var(--radius) 0 0;
   }
-  .ticket .tk-table{font-family:'Fraunces',serif; font-size:22px; margin-top:6px;}
-  .ticket .tk-meta{font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:2px;}
-  .ticket .tk-item{font-size:15px; font-weight:600; margin:10px 0 2px;}
+  .ticket .tk-table{font-family:'Fraunces',serif; font-size:26px; margin-top:6px; color:var(--mustard);}
+  .ticket .tk-meta{font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:2px;}
+  .ticket .tk-item{font-size:16px; font-weight:400; margin:12px 0 4px;}
   .ticket .tk-recipe{
-    font-size:12.5px; color:var(--ink); background:var(--paper); border:1px dashed var(--muted);
-    padding:8px 10px; margin:8px 0; white-space:pre-wrap; border-radius:var(--radius);
+    font-size:13px; color:var(--muted); background:var(--paper); border:1px solid var(--line);
+    padding:10px; margin:10px 0; white-space:pre-wrap; border-radius:var(--radius); font-weight:300;
   }
-  .badge{display:inline-block; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:3px 8px; border-radius:20px; border:1.5px solid var(--ink);}
-  .badge.kueche{background:var(--mustard); }
-  .badge.fertig{background:var(--sage); color:var(--slip); border-color:#33482f;}
-  .badge.abgeholt{background:var(--paper-2); color:var(--muted);}
-  .badge.frei{background:var(--sage); color:var(--slip); border-color:#33482f;}
-  .badge.besetzt{background:var(--rust); color:var(--slip); border-color:#7a3013;}
+  .badge{display:inline-block; font-size:10px; font-weight:500; text-transform:uppercase; letter-spacing:.06em; padding:4px 10px; border-radius:20px; border:1px solid var(--line);}
+  .badge.kueche{background:var(--paper-2); color:var(--mustard); border-color:var(--mustard-dark);}
+  .badge.fertig{background:var(--sage); color:var(--ink); border-color:#3c5443;}
+  .badge.abgeholt{background:var(--paper); color:var(--muted); border-color:var(--line);}
+  .badge.frei{background:var(--sage); color:var(--ink); border-color:#3c5443;}
+  .badge.besetzt{background:var(--rust); color:var(--ink); border-color:#8f3428;}
 
   .list-row{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
-    border:2px solid var(--ink); background:var(--slip); padding:12px 16px; border-radius:var(--radius);
-    margin-bottom:10px; box-shadow:var(--shadow); flex-wrap:wrap;
+    border:1px solid var(--line); background:var(--slip); padding:16px 20px; border-radius:var(--radius);
+    margin-bottom:12px; box-shadow:var(--shadow); flex-wrap:wrap;
   }
-  .list-row .left{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
-  .empty-note{color:var(--muted); font-size:14px; padding:20px 0;}
-  .section-title{margin:30px 0 14px; font-size:18px; display:flex; align-items:center; gap:10px;}
-  .section-title .eyebrow{margin:0;}
-  form.inline-form{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:20px;}
-  form.inline-form .field{margin-bottom:0; min-width:160px;}
+  .list-row .left{display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+  .empty-note{color:var(--muted); font-size:14px; padding:30px 0; font-weight: 300; text-align: center;}
+  .section-title{margin:40px 0 16px; font-size:20px; display:flex; align-items:center; gap:10px;}
+  .section-title .eyebrow{margin:0; font-size:12px;}
+  form.inline-form{display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; margin-bottom:24px;}
+  form.inline-form .field{margin-bottom:0; min-width:180px;}
 
-  .table-picker{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;}
+  .table-picker{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:24px;}
   .table-chip{
-    padding:8px 14px; border:2px solid var(--ink); border-radius:20px; cursor:pointer;
-    font-size:13px; font-weight:600; background:var(--slip);
+    padding:10px 18px; border:1px solid var(--line); border-radius:24px; cursor:pointer;
+    font-size:14px; font-weight:400; background:var(--slip); transition:all 0.2s ease;
   }
-  .table-chip.active{background:var(--ink); color:var(--slip);}
+  .table-chip:hover{border-color:var(--mustard); color:var(--mustard);}
+  .table-chip.active{background:var(--mustard); color:var(--paper); border-color:var(--mustard);}
 
   @media (max-width:600px){
-    .topbar{padding:14px 16px;}
-    .content{padding:20px 14px 90px;}
+    .topbar{padding:16px;}
+    .content{padding:24px 16px 90px;}
   }
 </style>
 </head>
 <body>
 
-<!-- ============ START ============ -->
+<!-- ============ START (GAST) ============ -->
 <div id="screen-start" class="screen active">
-  <div class="wrap">
-    <div class="eyebrow">Willkommen</div>
-    <div class="signature">Zur Linde</div>
-    <div class="sub">Bitte wähle aus, wie du dich anmelden möchtest</div>
-    <div class="role-grid">
-      <div class="role-card" onclick="showScreen('screen-kunde-login')">
-        <div class="num">01</div>
-        <h3>Gast</h3>
-        <p>Mit Tischnummer bestellen</p>
-      </div>
-      <div class="role-card" onclick="showScreen('screen-kellner-login')">
-        <div class="num">02</div>
-        <h3>Kellner</h3>
-        <p>Tische &amp; Bestellungen im Blick</p>
-      </div>
-      <div class="role-card" onclick="showScreen('screen-kueche-login')">
-        <div class="num">03</div>
-        <h3>Küche</h3>
-        <p>Eingehende Bestellungen zubereiten</p>
-      </div>
-      <div class="role-card" onclick="showScreen('screen-admin-login')">
-        <div class="num">04</div>
-        <h3>Admin</h3>
-        <p>Tische, Karte &amp; Preise verwalten</p>
-      </div>
-    </div>
+  <div class="gear-icon" onclick="showScreen('screen-staff-select')">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"></circle>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+    </svg>
   </div>
-</div>
-
-<!-- ============ KUNDE LOGIN ============ -->
-<div id="screen-kunde-login" class="screen">
-  <div class="login-wrap">
-    <div class="back-link" onclick="showScreen('screen-start')">&larr; Zurück</div>
-    <div class="login-card">
-      <div class="eyebrow">Gast</div>
-      <h2 style="margin-bottom:18px;">Tischnummer eingeben</h2>
+  <div class="wrap">
+    <div class="eyebrow">Willkommen bei</div>
+    <div class="signature">HWS</div>
+    <div class="sub">Bitte Tischnummer eingeben, um zur Speisekarte zu gelangen</div>
+    
+    <div class="login-card" style="margin: 0 auto; max-width: 320px; text-align: left;">
       <div class="field">
         <label>Tischnummer</label>
         <input type="text" id="kunde-tisch-input" inputmode="numeric" placeholder="z. B. 7">
       </div>
-      <button class="btn primary" style="width:100%;" onclick="kundeLogin()">Weiter zur Speisekarte</button>
+      <button class="btn primary" style="width:100%; padding: 12px;" onclick="kundeLogin()">Speisekarte öffnen</button>
       <div class="error-msg" id="kunde-login-error"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MITARBEITER AUSWAHL ============ -->
+<div id="screen-staff-select" class="screen">
+  <div class="wrap">
+    <div class="back-link" style="position:absolute; top:24px; left:24px;" onclick="showScreen('screen-start')">&larr; Zurück</div>
+    <div class="eyebrow">Interner Bereich</div>
+    <div class="signature" style="font-size:32px; margin-bottom:40px;">Mitarbeiter Login</div>
+    <div class="role-grid">
+      <div class="role-card" onclick="showScreen('screen-kellner-login')"><h3>Kellner</h3></div>
+      <div class="role-card" onclick="showScreen('screen-kueche-login')"><h3>Küche</h3></div>
+      <div class="role-card" onclick="showScreen('screen-admin-login')"><h3>Admin</h3></div>
     </div>
   </div>
 </div>
@@ -270,7 +277,7 @@
       <span class="tag">Speisekarte</span>
     </div>
     <div class="topbar-right">
-      <button class="btn ghost small" onclick="logoutTo('screen-start')">Abmelden</button>
+      <button class="btn ghost small" onclick="logoutTo('screen-start')">Verlassen</button>
     </div>
   </div>
   <div class="content">
@@ -285,7 +292,7 @@
 
     <div id="kunde-tab-bestellungen" class="tab-panel">
       <div id="kunde-orders-container"></div>
-      <div class="list-row" style="margin-top:10px; justify-content:flex-end;">
+      <div class="list-row" style="margin-top:10px; justify-content:flex-end; background: var(--paper-2);">
         <div class="cart-total">Gesamt: <span id="kunde-orders-total">0,00 €</span></div>
       </div>
     </div>
@@ -295,7 +302,7 @@
     <div class="cart-items" id="kunde-cart-summary">0 Artikel</div>
     <div style="display:flex; align-items:center; gap:16px;">
       <div class="cart-total" id="kunde-cart-total">0,00 €</div>
-      <button class="btn mustard" onclick="kundePlaceOrder()">Bestellung aufgeben</button>
+      <button class="btn primary" onclick="kundePlaceOrder()">Bestellung aufgeben</button>
     </div>
   </div>
 </div>
@@ -303,10 +310,10 @@
 <!-- ============ ADMIN LOGIN ============ -->
 <div id="screen-admin-login" class="screen">
   <div class="login-wrap">
-    <div class="back-link" onclick="showScreen('screen-start')">&larr; Zurück</div>
+    <div class="back-link" onclick="showScreen('screen-staff-select')">&larr; Zurück</div>
     <div class="login-card">
       <div class="eyebrow">Admin</div>
-      <h2 style="margin-bottom:18px;">Anmelden</h2>
+      <h2 style="margin-bottom:24px;">Anmelden</h2>
       <div class="field">
         <label>Passwort</label>
         <input type="password" id="admin-pw-input">
@@ -338,7 +345,7 @@
           <label>Neue Tischnummer</label>
           <input type="text" id="admin-new-table" placeholder="z. B. 12" required>
         </div>
-        <button class="btn mustard" type="submit">Tisch anlegen</button>
+        <button class="btn primary" type="submit">Tisch anlegen</button>
       </form>
       <div id="admin-tables-list"></div>
     </div>
@@ -350,15 +357,15 @@
           <label>Neue Kategorie</label>
           <input type="text" id="admin-new-category" placeholder="z. B. Vorspeisen" required>
         </div>
-        <button class="btn mustard" type="submit">Kategorie anlegen</button>
+        <button class="btn primary" type="submit">Kategorie anlegen</button>
       </form>
       <div id="admin-categories-list"></div>
     </div>
 
     <!-- Artikel -->
     <div id="admin-tab-artikel" class="tab-panel">
-      <div class="login-card" style="max-width:520px; margin-bottom:26px;">
-        <h3 style="margin-bottom:14px;">Neuen Artikel anlegen</h3>
+      <div class="login-card" style="max-width:520px; margin-bottom:32px;">
+        <h3 style="margin-bottom:20px; color:var(--mustard);">Neuen Artikel anlegen</h3>
         <form onsubmit="return adminAddItem(event)">
           <div class="field"><label>Name</label><input type="text" id="admin-item-name" required></div>
           <div class="field"><label>Beschreibung</label><textarea id="admin-item-desc"></textarea></div>
@@ -369,7 +376,7 @@
             <select id="admin-item-category" required></select>
           </div>
           <div class="field"><label>Rezept / Zubereitung (für die Küche)</label><textarea id="admin-item-recipe" placeholder="Zubereitungsschritte..."></textarea></div>
-          <button class="btn mustard" type="submit" style="width:100%;">Artikel speichern</button>
+          <button class="btn primary" type="submit" style="width:100%;">Artikel speichern</button>
         </form>
       </div>
       <div id="admin-items-list"></div>
@@ -378,11 +385,11 @@
     <!-- Passwörter -->
     <div id="admin-tab-passwoerter" class="tab-panel">
       <div class="login-card" style="max-width:420px;">
-        <h3 style="margin-bottom:14px;">Rollen-Passwörter ändern</h3>
+        <h3 style="margin-bottom:20px; color:var(--mustard);">Rollen-Passwörter ändern</h3>
         <div class="field"><label>Admin-Passwort</label><input type="text" id="pw-admin"></div>
         <div class="field"><label>Küche-Passwort</label><input type="text" id="pw-kueche"></div>
         <div class="field"><label>Kellner-Passwort</label><input type="text" id="pw-kellner"></div>
-        <button class="btn sage" onclick="adminSavePasswords()">Speichern</button>
+        <button class="btn primary" onclick="adminSavePasswords()" style="width:100%;">Speichern</button>
         <div class="error-msg" id="pw-save-msg"></div>
       </div>
     </div>
@@ -392,10 +399,10 @@
 <!-- ============ KUECHE LOGIN ============ -->
 <div id="screen-kueche-login" class="screen">
   <div class="login-wrap">
-    <div class="back-link" onclick="showScreen('screen-start')">&larr; Zurück</div>
+    <div class="back-link" onclick="showScreen('screen-staff-select')">&larr; Zurück</div>
     <div class="login-card">
       <div class="eyebrow">Küche</div>
-      <h2 style="margin-bottom:18px;">Anmelden</h2>
+      <h2 style="margin-bottom:24px;">Anmelden</h2>
       <div class="field"><label>Passwort</label><input type="password" id="kueche-pw-input"></div>
       <button class="btn primary" style="width:100%;" onclick="roleLogin('kueche')">Anmelden</button>
       <div class="error-msg" id="kueche-login-error"></div>
@@ -417,10 +424,10 @@
 <!-- ============ KELLNER LOGIN ============ -->
 <div id="screen-kellner-login" class="screen">
   <div class="login-wrap">
-    <div class="back-link" onclick="showScreen('screen-start')">&larr; Zurück</div>
+    <div class="back-link" onclick="showScreen('screen-staff-select')">&larr; Zurück</div>
     <div class="login-card">
       <div class="eyebrow">Kellner</div>
-      <h2 style="margin-bottom:18px;">Anmelden</h2>
+      <h2 style="margin-bottom:24px;">Anmelden</h2>
       <div class="field"><label>Passwort</label><input type="password" id="kellner-pw-input"></div>
       <button class="btn primary" style="width:100%;" onclick="roleLogin('kellner')">Anmelden</button>
       <div class="error-msg" id="kellner-login-error"></div>
@@ -462,7 +469,7 @@
     <div class="cart-items" id="kellner-cart-summary">0 Artikel</div>
     <div style="display:flex; align-items:center; gap:16px;">
       <div class="cart-total" id="kellner-cart-total">0,00 €</div>
-      <button class="btn mustard" onclick="kellnerPlaceOrder()">Für Tisch bestellen</button>
+      <button class="btn primary" onclick="kellnerPlaceOrder()">Für Tisch bestellen</button>
     </div>
   </div>
 </div>
@@ -487,7 +494,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const DEFAULT_PW = { adminPassword: "admin123", kuechePassword: "kueche123", kellnerPassword: "kellner123" };
+// Neues Admin Passwort
+const DEFAULT_PW = { adminPassword: "100413", kuechePassword: "kueche123", kellnerPassword: "kellner123" };
 
 // ---------- helpers ----------
 const euro = (n) => (Number(n) || 0).toFixed(2).replace(".", ",") + " €";
@@ -552,7 +560,7 @@ window.adminSavePasswords = async function(){
     kellnerPassword: $("pw-kellner").value.trim() || current.kellnerPassword,
   };
   await setDoc(ref, next, { merge: true });
-  $("pw-save-msg").style.color = "var(--sage)";
+  $("pw-save-msg").style.color = "var(--mustard)";
   $("pw-save-msg").textContent = "Gespeichert.";
   $("pw-admin").value = ""; $("pw-kueche").value = ""; $("pw-kellner").value = "";
 };
@@ -610,7 +618,7 @@ function renderMenuInto(container, onAdd){
           <div class="desc">${escapeHtml(item.description || "")}</div>
           <div class="row">
             <div class="price">${euro(item.price)}</div>
-            <button class="btn small mustard">+ Hinzufügen</button>
+            <button class="btn small primary">+ Hinzufügen</button>
           </div>
         </div>`;
       card.querySelector("button").onclick = () => onAdd(item);
@@ -628,7 +636,7 @@ function escapeAttr(str){ return escapeHtml(str); }
 
 // ================= KUNDE =================
 let currentTable = null;
-let kundeCart = {}; // itemId -> {item, qty}
+let kundeCart = {}; 
 
 window.kundeLogin = async function(){
   const val = $("kunde-tisch-input").value.trim();
@@ -737,7 +745,7 @@ function enterAdmin(){
   listenTables(renderAdminTables);
   listenCategories(() => { renderAdminCategories(); fillCategorySelect(); });
   listenItems(renderAdminItems);
-  getRolePasswords(); // warm cache, not stored globally by design
+  getRolePasswords();
 }
 
 window.adminTab = function(name){
@@ -829,7 +837,7 @@ function renderAdminItems(){
     row.innerHTML = `
       <div class="left">
         <strong>${escapeHtml(item.name)}</strong>
-        <span class="badge kueche" style="background:var(--paper-2); border-color:var(--muted);">${escapeHtml(catName)}</span>
+        <span class="badge kueche">${escapeHtml(catName)}</span>
         <span>${euro(item.price)}</span>
       </div>
       <button class="btn small ghost">Löschen</button>`;
@@ -857,7 +865,7 @@ function enterKueche(){
         <div class="tk-table">${escapeHtml(o.tableNumber)}</div>
         <div class="tk-item">${escapeHtml(o.itemName)} ×${o.qty}</div>
         ${o.recipe ? `<div class="tk-recipe">${escapeHtml(o.recipe)}</div>` : ""}
-        <button class="btn sage" style="width:100%; margin-top:8px;">Fertig</button>`;
+        <button class="btn primary" style="width:100%; margin-top:8px;">Fertig</button>`;
       t.querySelector("button").onclick = async () => {
         await updateDoc(doc(db, "orders", o.id), { status: "fertig" });
       };
@@ -910,7 +918,1022 @@ function renderKellnerFertig(orders){
       <div class="tk-table">${escapeHtml(o.tableNumber)}</div>
       <div class="tk-item">${escapeHtml(o.itemName)} ×${o.qty}</div>
       <span class="badge fertig">Bereit zum Abholen</span>
-      <button class="btn mustard" style="width:100%; margin-top:10px;">Abgeholt</button>`;
+      <button class="btn primary" style="width:100%; margin-top:16px;">Abgeholt</button>`;
+    t.querySelector("button").onclick = async () => { await updateDoc(doc(db, "orders", o.id), { status: "abgeholt" }); };
+    grid.appendChild(t);
+  });
+  c.appendChild(grid);
+}
+
+function renderKellnerAlle(orders){
+  const c = $("kellner-alle-container");
+  c.innerHTML = "";
+  if (orders.length === 0){ c.innerHTML = '<div class="empty-note">Keine aktiven Bestellungen.</div>'; return; }
+  const byTable = {};
+  orders.forEach(o => { (byTable[o.tableNumber] = byTable[o.tableNumber] || []).push(o); });
+  Object.keys(byTable).sort().forEach(tn => {
+    const block = document.createElement("div");
+    block.className = "category-block";
+    block.innerHTML = `<div class="category-title"><h2>Tisch ${escapeHtml(tn)}</h2></div>`;
+    byTable[tn].forEach(o => {
+      const row = document.createElement("div");
+      row.className = "list-row";
+      row.innerHTML = `<div class="left"><strong>${escapeHtml(o.itemName)}</strong> ×${o.qty}<span class="badge ${o.status}">${statusLabel(o.status)}</span></div><div>${euro(o.price*o.qty)}</div>`;
+      block.appendChild(row);
+    });
+    c.appendChild(block);
+  });
+}
+
+function renderKellnerTables(){
+  const c = $("kellner-tables-container");
+  c.innerHTML = "";
+  if (tablesCache.length === 0){ c.innerHTML = '<div class="empty-note">Noch keine Tische angelegt.</div>'; return; }
+  tablesCache.forEach(t => {
+    const row = document.createElement("div");
+    row.className = "list-row";
+    row.innerHTML = `<div class="left"><strong>Tisch ${escapeHtml(t.number)}</strong><span class="badge ${t.status}">${t.status === "frei" ? "Frei" : "Besetzt"}</span></div>
+      <button class="btn small ${t.status === "frei" ? "rust" : "sage"}">${t.status === "frei" ? "Als besetzt markieren" : "Als frei markieren"}</button>`;
+    row.querySelector("button").onclick = async () => { await updateDoc(doc(db, "tables", t.id), { status: t.status === "frei" ? "besetzt" : "frei" }); };
+    c.appendChild(row);
+  });
+}
+
+function renderKellnerTablePicker(){
+  const c = $("kellner-order-table-picker");
+  c.innerHTML = "";
+  tablesCache.forEach(t => {
+    const chip = document.createElement("div");
+    chip.className = "table-chip" + (kellnerSelectedTable?.id === t.id ? " active" : "");
+    chip.textContent = "Tisch " + t.number;
+    chip.onclick = () => { kellnerSelectedTable = t; renderKellnerTablePicker(); };
+    c.appendChild(chip);
+  });
+}
+
+function kellnerAddToCart(item){
+  if (!kellnerSelectedTable){ alert("Bitte zuerst einen Tisch auswählen."); return; }
+  if (!kellnerCart[item.id]) kellnerCart[item.id] = { item, qty: 0 };
+  kellnerCart[item.id].qty++;
+  updateKellnerCartBar();
+}
+
+function updateKellnerCartBar(){
+  const entries = Object.values(kellnerCart);
+  const bar = $("kellner-cart-bar");
+  if (entries.length === 0){ bar.style.display = "none"; return; }
+  bar.style.display = "flex";
+  const totalQty = entries.reduce((s,e) => s + e.qty, 0);
+  const total = entries.reduce((s,e) => s + e.qty * Number(e.item.price), 0);
+  $("kellner-cart-summary").textContent = (kellnerSelectedTable ? "Tisch " + kellnerSelectedTable.number + " · " : "") + totalQty + " Artikel: " + entries.map(e => `${e.item.name} ×${e.qty}`).join(", ");
+  $("kellner-cart-total").textContent = euro(total);
+}
+
+window.kellnerPlaceOrder = async function(){
+  const entries = Object.values(kellnerCart);
+  if (entries.length === 0 || !kellnerSelectedTable) return;
+  for (const e of entries){
+    await addDoc(collection(db, "orders"), {
+      tableId: kellnerSelectedTable.id,
+      tableNumber: kellnerSelectedTable.number,
+      itemId: e.item.id,
+      itemName: e.item.name,
+      price: Number(e.item.price),
+      qty: e.qty,
+      recipe: e.item.recipe || "",
+      status: "kueche",
+      orderedBy: "kellner",
+      createdAt: serverTimestamp()
+    });
+  }
+  kellnerCart = {};
+  updateKellnerCartBar();
+  kellnerTab("abholen");
+};
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bestellsystem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Edles Dark Theme mit Gold-Akzenten */
+    --ink: #f0eadd;
+    --paper: #0a0a0a;
+    --paper-2: #141414;
+    --slip: #1a1a1a;
+    --line: #333333;
+    --mustard: #cda434;
+    --mustard-dark: #a88222;
+    --sage: #2a3b2f;
+    --rust: #69241b;
+    --muted: #888888;
+    --radius: 4px;
+    --shadow: 0 8px 30px rgba(0,0,0,0.6);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    font-weight: 300;
+    min-height:100vh;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces', serif;
+    font-weight:400;
+    margin:0 0 4px 0;
+    letter-spacing:0.02em;
+  }
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--mustard);
+    font-weight:500;
+    margin-bottom:6px;
+  }
+  .screen{display:none; min-height:100vh;}
+  .screen.active{display:block;}
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 24px;
+    border-bottom:1px solid var(--line);
+    background:var(--slip);
+  }
+  .brand{display:flex; align-items:baseline; gap:10px;}
+  .brand h1{font-size:22px; color:var(--mustard);}
+  .brand .tag{font-size:12px; color:var(--muted); font-weight: 400;}
+  .topbar-right{display:flex; align-items:center; gap:14px; font-size:14px;}
+  .btn{
+    font-family:'Work Sans', sans-serif;
+    font-weight:400;
+    font-size:14px;
+    border:1px solid var(--line);
+    background:var(--slip);
+    color:var(--ink);
+    padding:10px 18px;
+    border-radius:var(--radius);
+    cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,0.2);
+    transition:all .2s ease;
+  }
+  .btn:hover{border-color:var(--mustard); color:var(--mustard);}
+  .btn:active{transform:translateY(1px); box-shadow:none;}
+  .btn.primary{background:var(--mustard); color:var(--paper); border:none;}
+  .btn.primary:hover{background:var(--mustard-dark); color:var(--paper);}
+  .btn.mustard{background:var(--mustard); color:var(--paper); border:none;}
+  .btn.mustard:hover{background:var(--mustard-dark);}
+  .btn.sage{background:var(--sage); border:1px solid #3c5443; color:var(--ink);}
+  .btn.rust{background:var(--rust); border:1px solid #8f3428; color:var(--ink);}
+  .btn.ghost{background:transparent; box-shadow:none; border-color:transparent;}
+  .btn.ghost:hover{background:var(--paper-2); border-color:var(--line);}
+  .btn.small{padding:6px 12px; font-size:12px;}
+  .btn:disabled{opacity:.4; cursor:not-allowed; transform:none;}
+
+  /* START & MITARBEITER */
+  #screen-start .wrap, #screen-staff-select .wrap {
+    max-width:880px; margin:0 auto; padding:80px 24px;
+    text-align:center;
+    position: relative;
+  }
+  .signature{
+    font-family:'Fraunces', serif; font-size:clamp(38px,7vw,64px);
+    line-height:1.02; margin-bottom:6px; color:var(--mustard);
+  }
+  .sub{color:var(--muted); font-size:16px; margin-bottom:52px; font-weight: 300;}
+  
+  .gear-icon {
+    position: absolute; top: 24px; right: 24px; cursor: pointer;
+    color: var(--muted); transition: color 0.2s ease;
+  }
+  .gear-icon:hover { color: var(--mustard); }
+
+  .role-grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:16px; text-align:left; max-width: 600px; margin: 0 auto;
+  }
+  .role-card{
+    border:1px solid var(--line); border-radius:var(--radius);
+    background:var(--slip); padding:22px 20px; cursor:pointer;
+    box-shadow:var(--shadow); transition:all .2s ease;
+  }
+  .role-card:hover{transform:translateY(-2px); border-color:var(--mustard);}
+  .role-card h3{font-size:19px; margin-bottom:0; text-align: center; color:var(--mustard);}
+
+  /* login */
+  .login-wrap{max-width:380px; margin:80px auto; padding:0 24px;}
+  .login-card{
+    border:1px solid var(--line); background:var(--slip); border-radius:var(--radius);
+    padding:32px; box-shadow:var(--shadow);
+  }
+  .field{margin-bottom:20px;}
+  .field label{display:block; font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; color:var(--muted);}
+  .field input, .field select, .field textarea{
+    width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius);
+    font-family:'Work Sans',sans-serif; font-size:15px; background:var(--paper); color:var(--ink);
+    transition: border-color 0.2s ease;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none; border-color: var(--mustard);
+  }
+  .field textarea{resize:vertical; min-height:70px;}
+  .error-msg{color:var(--rust); font-size:13px; margin-top:8px; min-height:16px;}
+  .back-link{display:inline-block; margin-bottom:24px; font-size:13px; color:var(--muted); cursor:pointer; text-decoration:none; transition: color 0.2s ease;}
+  .back-link:hover{color:var(--mustard);}
+
+  .content{max-width:1100px; margin:0 auto; padding:32px 24px 80px;}
+
+  /* tabs */
+  .tabs{display:flex; gap:8px; margin-bottom:32px; flex-wrap:wrap;}
+  .tab-btn{
+    font-family:'Work Sans',sans-serif; font-weight:400; font-size:13px;
+    padding:10px 18px; border:1px solid var(--line); background:transparent; color:var(--muted);
+    border-radius:var(--radius); cursor:pointer; transition:all 0.2s ease;
+  }
+  .tab-btn:hover{color:var(--ink); border-color:var(--muted);}
+  .tab-btn.active{background:var(--slip); border-color:var(--mustard); color:var(--mustard);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* menu / category */
+  .category-block{margin-bottom:48px;}
+  .category-title{
+    display:flex; align-items:baseline; gap:10px; margin-bottom:20px;
+    border-bottom:1px solid var(--line); padding-bottom:10px;
+  }
+  .category-title h2{font-size:22px; color:var(--mustard);}
+  .item-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:20px;}
+  .item-card{
+    border:1px solid var(--line); background:var(--slip); border-radius:var(--radius);
+    overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column;
+    transition: transform 0.2s ease;
+  }
+  .item-card:hover{transform:translateY(-2px); border-color:#444;}
+  .item-card img{width:100%; height:160px; object-fit:cover; display:block; border-bottom:1px solid var(--line); background:var(--paper-2);}
+  .item-card .body{padding:16px; display:flex; flex-direction:column; gap:8px; flex:1;}
+  .item-card h3{font-size:17px;}
+  .item-card .desc{font-size:13px; color:var(--muted); flex:1; font-weight:300; line-height: 1.4;}
+  .item-card .row{display:flex; align-items:center; justify-content:space-between; margin-top:8px;}
+  .price{font-family:'Fraunces',serif; font-weight:400; font-size:18px; color:var(--mustard);}
+
+  /* cart */
+  .cart-bar{
+    position:sticky; bottom:0; border-top:1px solid var(--line); background:var(--slip);
+    padding:16px 24px; display:flex; align-items:center; justify-content:space-between;
+    box-shadow:0 -4px 20px rgba(0,0,0,0.5); flex-wrap:wrap; gap:12px; z-index: 100;
+  }
+  .cart-items{font-size:13px; color:var(--muted); font-weight: 300;}
+  .cart-total{font-family:'Fraunces',serif; font-size:20px; color:var(--mustard);}
+
+  /* order ticket */
+  .ticket-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px;}
+  .ticket{
+    border:1px solid var(--line); background:var(--slip); border-radius:var(--radius);
+    padding:20px; box-shadow:var(--shadow); position:relative;
+  }
+  .ticket::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:3px;
+    background:var(--mustard); border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .ticket .tk-table{font-family:'Fraunces',serif; font-size:26px; margin-top:6px; color:var(--mustard);}
+  .ticket .tk-meta{font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:2px;}
+  .ticket .tk-item{font-size:16px; font-weight:400; margin:12px 0 4px;}
+  .ticket .tk-recipe{
+    font-size:13px; color:var(--muted); background:var(--paper); border:1px solid var(--line);
+    padding:10px; margin:10px 0; white-space:pre-wrap; border-radius:var(--radius); font-weight:300;
+  }
+  .badge{display:inline-block; font-size:10px; font-weight:500; text-transform:uppercase; letter-spacing:.06em; padding:4px 10px; border-radius:20px; border:1px solid var(--line);}
+  .badge.kueche{background:var(--paper-2); color:var(--mustard); border-color:var(--mustard-dark);}
+  .badge.fertig{background:var(--sage); color:var(--ink); border-color:#3c5443;}
+  .badge.abgeholt{background:var(--paper); color:var(--muted); border-color:var(--line);}
+  .badge.frei{background:var(--sage); color:var(--ink); border-color:#3c5443;}
+  .badge.besetzt{background:var(--rust); color:var(--ink); border-color:#8f3428;}
+
+  .list-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    border:1px solid var(--line); background:var(--slip); padding:16px 20px; border-radius:var(--radius);
+    margin-bottom:12px; box-shadow:var(--shadow); flex-wrap:wrap;
+  }
+  .list-row .left{display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+  .empty-note{color:var(--muted); font-size:14px; padding:30px 0; font-weight: 300; text-align: center;}
+  .section-title{margin:40px 0 16px; font-size:20px; display:flex; align-items:center; gap:10px;}
+  .section-title .eyebrow{margin:0; font-size:12px;}
+  form.inline-form{display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; margin-bottom:24px;}
+  form.inline-form .field{margin-bottom:0; min-width:180px;}
+
+  .table-picker{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:24px;}
+  .table-chip{
+    padding:10px 18px; border:1px solid var(--line); border-radius:24px; cursor:pointer;
+    font-size:14px; font-weight:400; background:var(--slip); transition:all 0.2s ease;
+  }
+  .table-chip:hover{border-color:var(--mustard); color:var(--mustard);}
+  .table-chip.active{background:var(--mustard); color:var(--paper); border-color:var(--mustard);}
+
+  @media (max-width:600px){
+    .topbar{padding:16px;}
+    .content{padding:24px 16px 90px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ START (GAST) ============ -->
+<div id="screen-start" class="screen active">
+  <div class="gear-icon" onclick="showScreen('screen-staff-select')">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"></circle>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+    </svg>
+  </div>
+  <div class="wrap">
+    <div class="eyebrow">Willkommen bei</div>
+    <div class="signature">HWS</div>
+    <div class="sub">Bitte Tischnummer eingeben, um zur Speisekarte zu gelangen</div>
+    
+    <div class="login-card" style="margin: 0 auto; max-width: 320px; text-align: left;">
+      <div class="field">
+        <label>Tischnummer</label>
+        <input type="text" id="kunde-tisch-input" inputmode="numeric" placeholder="z. B. 7">
+      </div>
+      <button class="btn primary" style="width:100%; padding: 12px;" onclick="kundeLogin()">Speisekarte öffnen</button>
+      <div class="error-msg" id="kunde-login-error"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MITARBEITER AUSWAHL ============ -->
+<div id="screen-staff-select" class="screen">
+  <div class="wrap">
+    <div class="back-link" style="position:absolute; top:24px; left:24px;" onclick="showScreen('screen-start')">&larr; Zurück</div>
+    <div class="eyebrow">Interner Bereich</div>
+    <div class="signature" style="font-size:32px; margin-bottom:40px;">Mitarbeiter Login</div>
+    <div class="role-grid">
+      <div class="role-card" onclick="showScreen('screen-kellner-login')"><h3>Kellner</h3></div>
+      <div class="role-card" onclick="showScreen('screen-kueche-login')"><h3>Küche</h3></div>
+      <div class="role-card" onclick="showScreen('screen-admin-login')"><h3>Admin</h3></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ KUNDE MENU ============ -->
+<div id="screen-kunde-menu" class="screen">
+  <div class="topbar">
+    <div class="brand">
+      <h1 id="kunde-tisch-title">Tisch —</h1>
+      <span class="tag">Speisekarte</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn ghost small" onclick="logoutTo('screen-start')">Verlassen</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="tabs">
+      <button class="tab-btn active" data-ktab="speisekarte" onclick="kundeTab('speisekarte')">Speisekarte</button>
+      <button class="tab-btn" data-ktab="bestellungen" onclick="kundeTab('bestellungen')">Meine Bestellungen</button>
+    </div>
+
+    <div id="kunde-tab-speisekarte" class="tab-panel active">
+      <div id="kunde-menu-container"></div>
+    </div>
+
+    <div id="kunde-tab-bestellungen" class="tab-panel">
+      <div id="kunde-orders-container"></div>
+      <div class="list-row" style="margin-top:10px; justify-content:flex-end; background: var(--paper-2);">
+        <div class="cart-total">Gesamt: <span id="kunde-orders-total">0,00 €</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cart-bar" id="kunde-cart-bar" style="display:none;">
+    <div class="cart-items" id="kunde-cart-summary">0 Artikel</div>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <div class="cart-total" id="kunde-cart-total">0,00 €</div>
+      <button class="btn primary" onclick="kundePlaceOrder()">Bestellung aufgeben</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ADMIN LOGIN ============ -->
+<div id="screen-admin-login" class="screen">
+  <div class="login-wrap">
+    <div class="back-link" onclick="showScreen('screen-staff-select')">&larr; Zurück</div>
+    <div class="login-card">
+      <div class="eyebrow">Admin</div>
+      <h2 style="margin-bottom:24px;">Anmelden</h2>
+      <div class="field">
+        <label>Passwort</label>
+        <input type="password" id="admin-pw-input">
+      </div>
+      <button class="btn primary" style="width:100%;" onclick="roleLogin('admin')">Anmelden</button>
+      <div class="error-msg" id="admin-login-error"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ADMIN PANEL ============ -->
+<div id="screen-admin-panel" class="screen">
+  <div class="topbar">
+    <div class="brand"><h1>Admin</h1><span class="tag">Verwaltung</span></div>
+    <div class="topbar-right"><button class="btn ghost small" onclick="logoutTo('screen-start')">Abmelden</button></div>
+  </div>
+  <div class="content">
+    <div class="tabs">
+      <button class="tab-btn active" data-atab="tische" onclick="adminTab('tische')">Tische</button>
+      <button class="tab-btn" data-atab="kategorien" onclick="adminTab('kategorien')">Kategorien</button>
+      <button class="tab-btn" data-atab="artikel" onclick="adminTab('artikel')">Artikel</button>
+      <button class="tab-btn" data-atab="passwoerter" onclick="adminTab('passwoerter')">Passwörter</button>
+    </div>
+
+    <!-- Tische -->
+    <div id="admin-tab-tische" class="tab-panel active">
+      <form class="inline-form" onsubmit="return adminAddTable(event)">
+        <div class="field">
+          <label>Neue Tischnummer</label>
+          <input type="text" id="admin-new-table" placeholder="z. B. 12" required>
+        </div>
+        <button class="btn primary" type="submit">Tisch anlegen</button>
+      </form>
+      <div id="admin-tables-list"></div>
+    </div>
+
+    <!-- Kategorien -->
+    <div id="admin-tab-kategorien" class="tab-panel">
+      <form class="inline-form" onsubmit="return adminAddCategory(event)">
+        <div class="field">
+          <label>Neue Kategorie</label>
+          <input type="text" id="admin-new-category" placeholder="z. B. Vorspeisen" required>
+        </div>
+        <button class="btn primary" type="submit">Kategorie anlegen</button>
+      </form>
+      <div id="admin-categories-list"></div>
+    </div>
+
+    <!-- Artikel -->
+    <div id="admin-tab-artikel" class="tab-panel">
+      <div class="login-card" style="max-width:520px; margin-bottom:32px;">
+        <h3 style="margin-bottom:20px; color:var(--mustard);">Neuen Artikel anlegen</h3>
+        <form onsubmit="return adminAddItem(event)">
+          <div class="field"><label>Name</label><input type="text" id="admin-item-name" required></div>
+          <div class="field"><label>Beschreibung</label><textarea id="admin-item-desc"></textarea></div>
+          <div class="field"><label>Preis (€)</label><input type="number" step="0.01" min="0" id="admin-item-price" required></div>
+          <div class="field"><label>Bild-URL</label><input type="url" id="admin-item-image" placeholder="https://..."></div>
+          <div class="field">
+            <label>Kategorie</label>
+            <select id="admin-item-category" required></select>
+          </div>
+          <div class="field"><label>Rezept / Zubereitung (für die Küche)</label><textarea id="admin-item-recipe" placeholder="Zubereitungsschritte..."></textarea></div>
+          <button class="btn primary" type="submit" style="width:100%;">Artikel speichern</button>
+        </form>
+      </div>
+      <div id="admin-items-list"></div>
+    </div>
+
+    <!-- Passwörter -->
+    <div id="admin-tab-passwoerter" class="tab-panel">
+      <div class="login-card" style="max-width:420px;">
+        <h3 style="margin-bottom:20px; color:var(--mustard);">Rollen-Passwörter ändern</h3>
+        <div class="field"><label>Admin-Passwort</label><input type="text" id="pw-admin"></div>
+        <div class="field"><label>Küche-Passwort</label><input type="text" id="pw-kueche"></div>
+        <div class="field"><label>Kellner-Passwort</label><input type="text" id="pw-kellner"></div>
+        <button class="btn primary" onclick="adminSavePasswords()" style="width:100%;">Speichern</button>
+        <div class="error-msg" id="pw-save-msg"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ KUECHE LOGIN ============ -->
+<div id="screen-kueche-login" class="screen">
+  <div class="login-wrap">
+    <div class="back-link" onclick="showScreen('screen-staff-select')">&larr; Zurück</div>
+    <div class="login-card">
+      <div class="eyebrow">Küche</div>
+      <h2 style="margin-bottom:24px;">Anmelden</h2>
+      <div class="field"><label>Passwort</label><input type="password" id="kueche-pw-input"></div>
+      <button class="btn primary" style="width:100%;" onclick="roleLogin('kueche')">Anmelden</button>
+      <div class="error-msg" id="kueche-login-error"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ KUECHE PANEL ============ -->
+<div id="screen-kueche-panel" class="screen">
+  <div class="topbar">
+    <div class="brand"><h1>Küche</h1><span class="tag">Offene Bestellungen</span></div>
+    <div class="topbar-right"><button class="btn ghost small" onclick="logoutTo('screen-start')">Abmelden</button></div>
+  </div>
+  <div class="content">
+    <div id="kueche-orders-container"></div>
+  </div>
+</div>
+
+<!-- ============ KELLNER LOGIN ============ -->
+<div id="screen-kellner-login" class="screen">
+  <div class="login-wrap">
+    <div class="back-link" onclick="showScreen('screen-staff-select')">&larr; Zurück</div>
+    <div class="login-card">
+      <div class="eyebrow">Kellner</div>
+      <h2 style="margin-bottom:24px;">Anmelden</h2>
+      <div class="field"><label>Passwort</label><input type="password" id="kellner-pw-input"></div>
+      <button class="btn primary" style="width:100%;" onclick="roleLogin('kellner')">Anmelden</button>
+      <div class="error-msg" id="kellner-login-error"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ KELLNER PANEL ============ -->
+<div id="screen-kellner-panel" class="screen">
+  <div class="topbar">
+    <div class="brand"><h1>Kellner</h1><span class="tag">Übersicht</span></div>
+    <div class="topbar-right"><button class="btn ghost small" onclick="logoutTo('screen-start')">Abmelden</button></div>
+  </div>
+  <div class="content">
+    <div class="tabs">
+      <button class="tab-btn active" data-wtab="abholen" onclick="kellnerTab('abholen')">Zum Abholen</button>
+      <button class="tab-btn" data-wtab="tische" onclick="kellnerTab('tische')">Tische</button>
+      <button class="tab-btn" data-wtab="bestellen" onclick="kellnerTab('bestellen')">Bestellen</button>
+    </div>
+
+    <div id="kellner-tab-abholen" class="tab-panel active">
+      <div class="section-title"><span class="eyebrow">Bereit zum Abholen</span></div>
+      <div id="kellner-fertig-container"></div>
+      <div class="section-title"><span class="eyebrow">Alle Bestellungen nach Tisch</span></div>
+      <div id="kellner-alle-container"></div>
+    </div>
+
+    <div id="kellner-tab-tische" class="tab-panel">
+      <div id="kellner-tables-container"></div>
+    </div>
+
+    <div id="kellner-tab-bestellen" class="tab-panel">
+      <div class="table-picker" id="kellner-order-table-picker"></div>
+      <div id="kellner-order-menu"></div>
+    </div>
+  </div>
+
+  <div class="cart-bar" id="kellner-cart-bar" style="display:none;">
+    <div class="cart-items" id="kellner-cart-summary">0 Artikel</div>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <div class="cart-total" id="kellner-cart-total">0,00 €</div>
+      <button class="btn primary" onclick="kellnerPlaceOrder()">Für Tisch bestellen</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, doc, setDoc, getDoc, deleteDoc,
+  updateDoc, onSnapshot, query, where, orderBy, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAcCCnC5zAbheBKz4YgDagdDPjd1_jlahM",
+  authDomain: "restaurant-karte-10dbf.firebaseapp.com",
+  projectId: "restaurant-karte-10dbf",
+  storageBucket: "restaurant-karte-10dbf.firebasestorage.app",
+  messagingSenderId: "980996852356",
+  appId: "1:980996852356:web:5464402afc8e15169890d1",
+  measurementId: "G-708TLXBBK6"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Neues Admin Passwort
+const DEFAULT_PW = { adminPassword: "100413", kuechePassword: "kueche123", kellnerPassword: "kellner123" };
+
+// ---------- helpers ----------
+const euro = (n) => (Number(n) || 0).toFixed(2).replace(".", ",") + " €";
+const $ = (id) => document.getElementById(id);
+
+window.showScreen = function(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  $(id).classList.add("active");
+};
+
+const activeUnsubs = [];
+function trackUnsub(fn){ activeUnsubs.push(fn); }
+function clearUnsubs(){ while(activeUnsubs.length){ activeUnsubs.pop()(); } }
+
+window.logoutTo = function(id){
+  clearUnsubs();
+  currentTable = null;
+  kundeCart = {};
+  kellnerCart = {};
+  kellnerSelectedTable = null;
+  showScreen(id);
+};
+
+// ---------- settings / passwords ----------
+async function getRolePasswords(){
+  const ref = doc(db, "settings", "roles");
+  const snap = await getDoc(ref);
+  if (snap.exists()) return { ...DEFAULT_PW, ...snap.data() };
+  return DEFAULT_PW;
+}
+
+window.roleLogin = async function(role){
+  const pwMap = { admin: "admin-pw-input", kueche: "kueche-pw-input", kellner: "kellner-pw-input" };
+  const errMap = { admin: "admin-login-error", kueche: "kueche-login-error", kellner: "kellner-login-error" };
+  const targetMap = { admin: "screen-admin-panel", kueche: "screen-kueche-panel", kellner: "screen-kellner-panel" };
+  const pwFieldKey = { admin: "adminPassword", kueche: "kuechePassword", kellner: "kellnerPassword" };
+  const entered = $(pwMap[role]).value;
+  $(errMap[role]).textContent = "";
+  try{
+    const pw = await getRolePasswords();
+    if (entered && entered === pw[pwFieldKey[role]]){
+      $(pwMap[role]).value = "";
+      if (role === "admin") enterAdmin();
+      if (role === "kueche") enterKueche();
+      if (role === "kellner") enterKellner();
+      showScreen(targetMap[role]);
+    } else {
+      $(errMap[role]).textContent = "Falsches Passwort.";
+    }
+  }catch(e){
+    console.error(e);
+    $(errMap[role]).textContent = "Verbindungsfehler. Bitte erneut versuchen.";
+  }
+};
+
+window.adminSavePasswords = async function(){
+  const ref = doc(db, "settings", "roles");
+  const current = await getRolePasswords();
+  const next = {
+    adminPassword: $("pw-admin").value.trim() || current.adminPassword,
+    kuechePassword: $("pw-kueche").value.trim() || current.kuechePassword,
+    kellnerPassword: $("pw-kellner").value.trim() || current.kellnerPassword,
+  };
+  await setDoc(ref, next, { merge: true });
+  $("pw-save-msg").style.color = "var(--mustard)";
+  $("pw-save-msg").textContent = "Gespeichert.";
+  $("pw-admin").value = ""; $("pw-kueche").value = ""; $("pw-kellner").value = "";
+};
+
+// ---------- caches ----------
+let categoriesCache = [];
+let itemsCache = [];
+let tablesCache = [];
+
+function listenCategories(cb){
+  const q = query(collection(db, "categories"), orderBy("name"));
+  const unsub = onSnapshot(q, snap => {
+    categoriesCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    cb && cb();
+  });
+  trackUnsub(unsub);
+}
+function listenItems(cb){
+  const unsub = onSnapshot(collection(db, "items"), snap => {
+    itemsCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    cb && cb();
+  });
+  trackUnsub(unsub);
+}
+function listenTables(cb){
+  const q = query(collection(db, "tables"), orderBy("number"));
+  const unsub = onSnapshot(q, snap => {
+    tablesCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    cb && cb();
+  });
+  trackUnsub(unsub);
+}
+
+function renderMenuInto(container, onAdd){
+  container.innerHTML = "";
+  if (categoriesCache.length === 0){
+    container.innerHTML = '<div class="empty-note">Noch keine Kategorien angelegt.</div>';
+    return;
+  }
+  categoriesCache.forEach(cat => {
+    const items = itemsCache.filter(i => i.categoryId === cat.id);
+    if (items.length === 0) return;
+    const block = document.createElement("div");
+    block.className = "category-block";
+    block.innerHTML = `<div class="category-title"><h2>${escapeHtml(cat.name)}</h2></div>`;
+    const grid = document.createElement("div");
+    grid.className = "item-grid";
+    items.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "item-card";
+      card.innerHTML = `
+        ${item.imageUrl ? `<img src="${escapeAttr(item.imageUrl)}" alt="${escapeAttr(item.name)}" onerror="this.style.display='none'">` : ""}
+        <div class="body">
+          <h3>${escapeHtml(item.name)}</h3>
+          <div class="desc">${escapeHtml(item.description || "")}</div>
+          <div class="row">
+            <div class="price">${euro(item.price)}</div>
+            <button class="btn small primary">+ Hinzufügen</button>
+          </div>
+        </div>`;
+      card.querySelector("button").onclick = () => onAdd(item);
+      grid.appendChild(card);
+    });
+    block.appendChild(grid);
+    container.appendChild(block);
+  });
+}
+
+function escapeHtml(str){
+  return String(str ?? "").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+}
+function escapeAttr(str){ return escapeHtml(str); }
+
+// ================= KUNDE =================
+let currentTable = null;
+let kundeCart = {}; 
+
+window.kundeLogin = async function(){
+  const val = $("kunde-tisch-input").value.trim();
+  $("kunde-login-error").textContent = "";
+  if (!val){ $("kunde-login-error").textContent = "Bitte Tischnummer eingeben."; return; }
+  const q = query(collection(db, "tables"), where("number", "==", val));
+  const { getDocs } = await import("https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js");
+  const snap = await getDocs(q);
+  if (snap.empty){
+    $("kunde-login-error").textContent = "Dieser Tisch ist nicht angelegt.";
+    return;
+  }
+  currentTable = { id: snap.docs[0].id, ...snap.docs[0].data() };
+  $("kunde-tisch-title").textContent = "Tisch " + currentTable.number;
+  kundeCart = {};
+  updateKundeCartBar();
+  enterKundeMenu();
+  showScreen("screen-kunde-menu");
+};
+
+function enterKundeMenu(){
+  listenCategories(() => renderMenuInto($("kunde-menu-container"), kundeAddToCart));
+  listenItems(() => renderMenuInto($("kunde-menu-container"), kundeAddToCart));
+  listenKundeOrders();
+}
+
+function kundeAddToCart(item){
+  if (!kundeCart[item.id]) kundeCart[item.id] = { item, qty: 0 };
+  kundeCart[item.id].qty++;
+  updateKundeCartBar();
+}
+
+function updateKundeCartBar(){
+  const entries = Object.values(kundeCart);
+  const bar = $("kunde-cart-bar");
+  if (entries.length === 0){ bar.style.display = "none"; return; }
+  bar.style.display = "flex";
+  const totalQty = entries.reduce((s,e) => s + e.qty, 0);
+  const total = entries.reduce((s,e) => s + e.qty * Number(e.item.price), 0);
+  $("kunde-cart-summary").textContent = totalQty + " Artikel: " + entries.map(e => `${e.item.name} ×${e.qty}`).join(", ");
+  $("kunde-cart-total").textContent = euro(total);
+}
+
+window.kundePlaceOrder = async function(){
+  const entries = Object.values(kundeCart);
+  if (entries.length === 0 || !currentTable) return;
+  for (const e of entries){
+    await addDoc(collection(db, "orders"), {
+      tableId: currentTable.id,
+      tableNumber: currentTable.number,
+      itemId: e.item.id,
+      itemName: e.item.name,
+      price: Number(e.item.price),
+      qty: e.qty,
+      recipe: e.item.recipe || "",
+      status: "kueche",
+      orderedBy: "gast",
+      createdAt: serverTimestamp()
+    });
+  }
+  kundeCart = {};
+  updateKundeCartBar();
+  kundeTab("bestellungen");
+};
+
+window.kundeTab = function(name){
+  document.querySelectorAll("#screen-kunde-menu .tab-btn").forEach(b => b.classList.toggle("active", b.dataset.ktab === name));
+  document.querySelectorAll("#screen-kunde-menu .tab-panel").forEach(p => p.classList.remove("active"));
+  $("kunde-tab-" + name).classList.add("active");
+};
+
+function listenKundeOrders(){
+  const q = query(collection(db, "orders"), where("tableId", "==", currentTable.id));
+  const unsub = onSnapshot(q, snap => {
+    const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a,b) => (a.createdAt?.seconds||0) - (b.createdAt?.seconds||0));
+    const container = $("kunde-orders-container");
+    container.innerHTML = "";
+    let total = 0;
+    if (orders.length === 0){
+      container.innerHTML = '<div class="empty-note">Noch keine Bestellungen.</div>';
+    }
+    orders.forEach(o => {
+      total += Number(o.price) * Number(o.qty);
+      const row = document.createElement("div");
+      row.className = "list-row";
+      row.innerHTML = `
+        <div class="left">
+          <strong>${escapeHtml(o.itemName)}</strong>&nbsp;×${o.qty}
+          <span class="badge ${o.status}">${statusLabel(o.status)}</span>
+        </div>
+        <div>${euro(o.price * o.qty)}</div>`;
+      container.appendChild(row);
+    });
+    $("kunde-orders-total").textContent = euro(total);
+  });
+  trackUnsub(unsub);
+}
+
+function statusLabel(s){
+  return { kueche: "In der Küche", fertig: "Fertig", abgeholt: "Abgeholt" }[s] || s;
+}
+
+// ================= ADMIN =================
+function enterAdmin(){
+  listenTables(renderAdminTables);
+  listenCategories(() => { renderAdminCategories(); fillCategorySelect(); });
+  listenItems(renderAdminItems);
+  getRolePasswords();
+}
+
+window.adminTab = function(name){
+  document.querySelectorAll("#screen-admin-panel .tab-btn").forEach(b => b.classList.toggle("active", b.dataset.atab === name));
+  document.querySelectorAll("#screen-admin-panel .tab-panel").forEach(p => p.classList.remove("active"));
+  $("admin-tab-" + name).classList.add("active");
+};
+
+window.adminAddTable = async function(ev){
+  ev.preventDefault();
+  const val = $("admin-new-table").value.trim();
+  if (!val) return false;
+  await addDoc(collection(db, "tables"), { number: val, status: "frei" });
+  $("admin-new-table").value = "";
+  return false;
+};
+
+function renderAdminTables(){
+  const c = $("admin-tables-list");
+  c.innerHTML = "";
+  if (tablesCache.length === 0){ c.innerHTML = '<div class="empty-note">Noch keine Tische angelegt.</div>'; return; }
+  tablesCache.forEach(t => {
+    const row = document.createElement("div");
+    row.className = "list-row";
+    row.innerHTML = `
+      <div class="left"><strong>Tisch ${escapeHtml(t.number)}</strong> <span class="badge ${t.status}">${t.status === "frei" ? "Frei" : "Besetzt"}</span></div>
+      <button class="btn small ghost">Löschen</button>`;
+    row.querySelector("button").onclick = async () => { if(confirm("Tisch löschen?")) await deleteDoc(doc(db, "tables", t.id)); };
+    c.appendChild(row);
+  });
+}
+
+window.adminAddCategory = async function(ev){
+  ev.preventDefault();
+  const val = $("admin-new-category").value.trim();
+  if (!val) return false;
+  await addDoc(collection(db, "categories"), { name: val });
+  $("admin-new-category").value = "";
+  return false;
+};
+
+function renderAdminCategories(){
+  const c = $("admin-categories-list");
+  c.innerHTML = "";
+  if (categoriesCache.length === 0){ c.innerHTML = '<div class="empty-note">Noch keine Kategorien angelegt.</div>'; return; }
+  categoriesCache.forEach(cat => {
+    const row = document.createElement("div");
+    row.className = "list-row";
+    row.innerHTML = `<div class="left"><strong>${escapeHtml(cat.name)}</strong></div>
+      <button class="btn small ghost">Löschen</button>`;
+    row.querySelector("button").onclick = async () => { if(confirm("Kategorie löschen? Zugehörige Artikel bleiben erhalten, aber ohne Kategorie.")) await deleteDoc(doc(db, "categories", cat.id)); };
+    c.appendChild(row);
+  });
+}
+
+function fillCategorySelect(){
+  const sel = $("admin-item-category");
+  const currentVal = sel.value;
+  sel.innerHTML = categoriesCache.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("");
+  if (currentVal) sel.value = currentVal;
+}
+
+window.adminAddItem = async function(ev){
+  ev.preventDefault();
+  const name = $("admin-item-name").value.trim();
+  const price = parseFloat($("admin-item-price").value);
+  const categoryId = $("admin-item-category").value;
+  if (!name || isNaN(price) || !categoryId){ alert("Bitte Name, Preis und Kategorie angeben."); return false; }
+  await addDoc(collection(db, "items"), {
+    name,
+    description: $("admin-item-desc").value.trim(),
+    price,
+    imageUrl: $("admin-item-image").value.trim(),
+    categoryId,
+    recipe: $("admin-item-recipe").value.trim()
+  });
+  ["admin-item-name","admin-item-desc","admin-item-price","admin-item-image","admin-item-recipe"].forEach(id => $(id).value = "");
+  return false;
+};
+
+function renderAdminItems(){
+  const c = $("admin-items-list");
+  c.innerHTML = "";
+  if (itemsCache.length === 0){ c.innerHTML = '<div class="empty-note">Noch keine Artikel angelegt.</div>'; return; }
+  itemsCache.forEach(item => {
+    const catName = categoriesCache.find(cat => cat.id === item.categoryId)?.name || "Ohne Kategorie";
+    const row = document.createElement("div");
+    row.className = "list-row";
+    row.innerHTML = `
+      <div class="left">
+        <strong>${escapeHtml(item.name)}</strong>
+        <span class="badge kueche">${escapeHtml(catName)}</span>
+        <span>${euro(item.price)}</span>
+      </div>
+      <button class="btn small ghost">Löschen</button>`;
+    row.querySelector("button").onclick = async () => { if(confirm("Artikel löschen?")) await deleteDoc(doc(db, "items", item.id)); };
+    c.appendChild(row);
+  });
+}
+
+// ================= KUECHE =================
+function enterKueche(){
+  const q = query(collection(db, "orders"), where("status", "==", "kueche"));
+  const unsub = onSnapshot(q, snap => {
+    const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a,b) => (a.createdAt?.seconds||0) - (b.createdAt?.seconds||0));
+    const c = $("kueche-orders-container");
+    c.innerHTML = "";
+    if (orders.length === 0){ c.innerHTML = '<div class="empty-note">Aktuell keine offenen Bestellungen.</div>'; return; }
+    const grid = document.createElement("div");
+    grid.className = "ticket-grid";
+    orders.forEach(o => {
+      const t = document.createElement("div");
+      t.className = "ticket";
+      t.innerHTML = `
+        <div class="tk-meta">Tisch</div>
+        <div class="tk-table">${escapeHtml(o.tableNumber)}</div>
+        <div class="tk-item">${escapeHtml(o.itemName)} ×${o.qty}</div>
+        ${o.recipe ? `<div class="tk-recipe">${escapeHtml(o.recipe)}</div>` : ""}
+        <button class="btn primary" style="width:100%; margin-top:8px;">Fertig</button>`;
+      t.querySelector("button").onclick = async () => {
+        await updateDoc(doc(db, "orders", o.id), { status: "fertig" });
+      };
+      grid.appendChild(t);
+    });
+    c.appendChild(grid);
+  });
+  trackUnsub(unsub);
+}
+
+// ================= KELLNER =================
+let kellnerCart = {};
+let kellnerSelectedTable = null;
+
+function enterKellner(){
+  listenTables(() => { renderKellnerTables(); renderKellnerTablePicker(); });
+  listenCategories(() => renderMenuInto($("kellner-order-menu"), kellnerAddToCart));
+  listenItems(() => renderMenuInto($("kellner-order-menu"), kellnerAddToCart));
+  listenKellnerOrders();
+}
+
+window.kellnerTab = function(name){
+  document.querySelectorAll("#screen-kellner-panel .tab-btn").forEach(b => b.classList.toggle("active", b.dataset.wtab === name));
+  document.querySelectorAll("#screen-kellner-panel .tab-panel").forEach(p => p.classList.remove("active"));
+  $("kellner-tab-" + name).classList.add("active");
+  $("kellner-cart-bar").style.display = (name === "bestellen" && Object.keys(kellnerCart).length > 0) ? "flex" : "none";
+};
+
+function listenKellnerOrders(){
+  const unsub = onSnapshot(collection(db, "orders"), snap => {
+    const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a,b) => (a.createdAt?.seconds||0) - (b.createdAt?.seconds||0));
+    renderKellnerFertig(orders.filter(o => o.status === "fertig"));
+    renderKellnerAlle(orders.filter(o => o.status !== "abgeholt"));
+  });
+  trackUnsub(unsub);
+}
+
+function renderKellnerFertig(orders){
+  const c = $("kellner-fertig-container");
+  c.innerHTML = "";
+  if (orders.length === 0){ c.innerHTML = '<div class="empty-note">Nichts zum Abholen bereit.</div>'; return; }
+  const grid = document.createElement("div");
+  grid.className = "ticket-grid";
+  orders.forEach(o => {
+    const t = document.createElement("div");
+    t.className = "ticket";
+    t.innerHTML = `
+      <div class="tk-meta">Tisch</div>
+      <div class="tk-table">${escapeHtml(o.tableNumber)}</div>
+      <div class="tk-item">${escapeHtml(o.itemName)} ×${o.qty}</div>
+      <span class="badge fertig">Bereit zum Abholen</span>
+      <button class="btn primary" style="width:100%; margin-top:16px;">Abgeholt</button>`;
     t.querySelector("button").onclick = async () => { await updateDoc(doc(db, "orders", o.id), { status: "abgeholt" }); };
     grid.appendChild(t);
   });
