@@ -496,7 +496,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Neues Admin Passwort
+// Neues Admin Passwort (Fallback)
 const DEFAULT_PW = { adminPassword: "100413", kuechePassword: "kueche123", kellnerPassword: "kellner123" };
 
 // ---------- helpers ----------
@@ -558,17 +558,28 @@ window.roleLogin = async function(role){
 };
 
 window.adminSavePasswords = async function(){
-  const ref = doc(db, "settings", "roles");
-  const current = await getRolePasswords();
-  const next = {
-    adminPassword: $("pw-admin").value.trim() || current.adminPassword,
-    kuechePassword: $("pw-kueche").value.trim() || current.kuechePassword,
-    kellnerPassword: $("pw-kellner").value.trim() || current.kellnerPassword,
-  };
-  await setDoc(ref, next, { merge: true });
-  $("pw-save-msg").style.color = "var(--mustard)";
-  $("pw-save-msg").textContent = "Gespeichert.";
-  $("pw-admin").value = ""; $("pw-kueche").value = ""; $("pw-kellner").value = "";
+  try {
+    const ref = doc(db, "settings", "roles");
+    const current = await getRolePasswords();
+    const next = {
+      adminPassword: $("pw-admin").value.trim() || current.adminPassword,
+      kuechePassword: $("pw-kueche").value.trim() || current.kuechePassword,
+      kellnerPassword: $("pw-kellner").value.trim() || current.kellnerPassword,
+    };
+    
+    await setDoc(ref, next, { merge: true });
+    
+    $("pw-save-msg").style.color = "var(--mustard)";
+    $("pw-save-msg").textContent = "Erfolgreich gespeichert!";
+    $("pw-admin").value = ""; 
+    $("pw-kueche").value = ""; 
+    $("pw-kellner").value = "";
+    
+  } catch (e) {
+    console.error("Speicher-Fehler:", e);
+    $("pw-save-msg").style.color = "var(--rust)";
+    $("pw-save-msg").textContent = "Fehler: Keine Schreibrechte in der Datenbank (Firebase Rules checken!).";
+  }
 };
 
 // ---------- caches ----------
