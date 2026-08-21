@@ -41,8 +41,11 @@
   #screen-start .wrap, #screen-staff-select .wrap { max-width:880px; margin:0 auto; padding:80px 24px; text-align:center; position: relative; }
   .signature{ font-family:'Fraunces', serif; font-size:clamp(38px,7vw,64px); line-height:1.02; margin-bottom:6px; color:var(--mustard); }
   .sub{ color:var(--muted); font-size:16px; margin-bottom:52px; font-weight: 300; }
-  .gear-icon { position: absolute; top: 24px; right: 24px; cursor: pointer; color: var(--muted); transition: color 0.2s ease; }
+  
+  /* Fix für Handy: z-index hält das Zahnrad im Vordergrund, padding macht es leichter drückbar */
+  .gear-icon { position: absolute; top: 16px; right: 16px; cursor: pointer; color: var(--muted); transition: color 0.2s ease; z-index: 100; padding: 12px; }
   .gear-icon:hover { color: var(--mustard); }
+  
   .role-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; text-align:left; max-width: 600px; margin: 0 auto; }
   .role-card{ border:1px solid var(--line); border-radius:var(--radius); background:var(--slip); padding:22px 20px; cursor:pointer; box-shadow:var(--shadow); transition:all .2s ease; }
   .role-card:hover{ transform:translateY(-2px); border-color:var(--mustard); }
@@ -103,7 +106,7 @@
   .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:999; align-items:center; justify-content:center; padding:20px; }
   .modal-overlay.active { display:flex; }
   .modal-content { background:var(--slip); padding:32px; border-radius:var(--radius); border:1px solid var(--line); width:100%; max-width:420px; position: relative; }
-  .close-modal { position:absolute; top:16px; right:16px; cursor:pointer; color:var(--muted); }
+  .close-modal { position:absolute; top:16px; right:16px; cursor:pointer; color:var(--muted); padding:10px; z-index: 10; }
   
   .tip-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom: 24px; }
   .tip-btn { padding:12px; border:1px solid var(--line); border-radius:var(--radius); background:var(--paper); color:var(--ink); cursor:pointer; text-align:center; transition:0.2s; }
@@ -146,7 +149,8 @@
 <!-- ============ MITARBEITER AUSWAHL ============ -->
 <div id="screen-staff-select" class="screen">
   <div class="wrap">
-    <div class="back-link" style="position:absolute; top:24px; left:24px;" onclick="showScreen('screen-start')">&larr; Zurück</div>
+    <!-- Padding hinzugefügt für besseres Treffen auf Handys -->
+    <div class="back-link" style="position:absolute; top:16px; left:16px; z-index:100; padding:12px;" onclick="showScreen('screen-start')">&larr; Zurück</div>
     <div class="eyebrow">Interner Bereich</div>
     <div class="signature" style="font-size:32px; margin-bottom:40px;">Mitarbeiter Login</div>
     <div class="role-grid">
@@ -225,7 +229,7 @@
 <!-- ============ ADMIN LOGIN ============ -->
 <div id="screen-admin-login" class="screen">
   <div class="login-wrap">
-    <div class="back-link" onclick="showScreen('screen-staff-select')">&larr; Zurück</div>
+    <div class="back-link" style="padding:10px; margin-left:-10px;" onclick="showScreen('screen-staff-select')">&larr; Zurück</div>
     <div class="login-card">
       <div class="eyebrow">Admin</div><h2 style="margin-bottom:24px;">Anmelden</h2>
       <div class="field"><label>Passwort</label><input type="password" id="admin-pw-input"></div>
@@ -268,7 +272,9 @@
         <h3 style="margin-bottom:20px; color:var(--mustard);">Neuen Artikel anlegen</h3>
         <form onsubmit="return adminAddItem(event)">
           <div class="field"><label>Name</label><input type="text" id="admin-item-name" required></div>
+          <div class="field"><label>Beschreibung</label><textarea id="admin-item-desc"></textarea></div>
           <div class="field"><label>Preis (€)</label><input type="number" step="0.01" min="0" id="admin-item-price" required></div>
+          <div class="field"><label>Bild-URL</label><input type="url" id="admin-item-image" placeholder="https://..."></div>
           <div class="field"><label>Kategorie</label><select id="admin-item-category" required></select></div>
           <button class="btn primary" type="submit" style="width:100%;">Artikel speichern</button>
         </form>
@@ -290,7 +296,7 @@
 <!-- ============ KUECHE LOGIN ============ -->
 <div id="screen-kueche-login" class="screen">
   <div class="login-wrap">
-    <div class="back-link" onclick="showScreen('screen-staff-select')">&larr; Zurück</div>
+    <div class="back-link" style="padding:10px; margin-left:-10px;" onclick="showScreen('screen-staff-select')">&larr; Zurück</div>
     <div class="login-card">
       <div class="eyebrow">Küche</div><h2 style="margin-bottom:24px;">Anmelden</h2>
       <div class="field"><label>Passwort</label><input type="password" id="kueche-pw-input"></div>
@@ -312,7 +318,7 @@
 <!-- ============ KELLNER LOGIN ============ -->
 <div id="screen-kellner-login" class="screen">
   <div class="login-wrap">
-    <div class="back-link" onclick="showScreen('screen-staff-select')">&larr; Zurück</div>
+    <div class="back-link" style="padding:10px; margin-left:-10px;" onclick="showScreen('screen-staff-select')">&larr; Zurück</div>
     <div class="login-card">
       <div class="eyebrow">Kellner</div><h2 style="margin-bottom:24px;">Anmelden</h2>
       <div class="field"><label>Passwort</label><input type="password" id="kellner-pw-input"></div>
@@ -392,6 +398,7 @@ const pingSound = new Audio('https://actions.google.com/sounds/v1/alarms/beep_sh
 const euro = (n) => (Number(n) || 0).toFixed(2).replace(".", ",") + " €";
 const $ = (id) => document.getElementById(id);
 const escapeHtml = (str) => String(str ?? "").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const escapeAttr = (str) => escapeHtml(str);
 
 window.showScreen = function(id){
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
@@ -426,7 +433,6 @@ window.roleLogin = async function(role){
       if (role === "admin") enterAdmin();
       if (role === "kueche") enterKueche();
       if (role === "kellner"){
-        // Erlaubnis für Push Notifications anfragen
         if ("Notification" in window) Notification.requestPermission();
         enterKellner();
       }
@@ -531,7 +537,7 @@ function enterAdmin(){
 }
 window.adminAddTable = async function(ev){ ev.preventDefault(); await addDoc(collection(db, "tables"), { number: $("admin-new-table").value, status: "frei", callStatus: null }); $("admin-new-table").value = ""; return false; };
 window.adminAddCategory = async function(ev){ ev.preventDefault(); await addDoc(collection(db, "categories"), { name: $("admin-new-category").value }); $("admin-new-category").value = ""; return false; };
-window.adminAddItem = async function(ev){ ev.preventDefault(); await addDoc(collection(db, "items"), { name: $("admin-item-name").value, price: parseFloat($("admin-item-price").value), categoryId: $("admin-item-category").value }); $("admin-item-name").value = ""; $("admin-item-price").value = ""; return false; };
+window.adminAddItem = async function(ev){ ev.preventDefault(); await addDoc(collection(db, "items"), { name: $("admin-item-name").value, description: $("admin-item-desc").value, imageUrl: $("admin-item-image").value, price: parseFloat($("admin-item-price").value), categoryId: $("admin-item-category").value }); $("admin-item-name").value = ""; $("admin-item-desc").value = ""; $("admin-item-image").value = ""; $("admin-item-price").value = ""; return false; };
 window.adminTab = function(name){ document.querySelectorAll("#screen-admin-panel .tab-btn").forEach(b=>b.classList.toggle("active", b.dataset.atab===name)); document.querySelectorAll("#screen-admin-panel .tab-panel").forEach(p=>p.classList.remove("active")); $("admin-tab-"+name).classList.add("active"); };
 
 // ================= KUECHE =================
@@ -631,7 +637,18 @@ function renderMenuInto(container, onAdd){
   container.innerHTML = categoriesCache.map(cat => {
     const items = itemsCache.filter(i => i.categoryId === cat.id);
     if (!items.length) return "";
-    return `<div class="category-block"><div class="category-title"><h2>${escapeHtml(cat.name)}</h2></div><div class="item-grid">` + items.map(item => `<div class="item-card"><div class="body"><h3>${escapeHtml(item.name)}</h3><div class="row"><div class="price">${euro(item.price)}</div><button class="btn small primary" id="add-btn-${item.id}">+ Hinzufügen</button></div></div></div>`).join("") + `</div></div>`;
+    return `<div class="category-block"><div class="category-title"><h2>${escapeHtml(cat.name)}</h2></div><div class="item-grid">` + items.map(item => `
+      <div class="item-card">
+        ${item.imageUrl ? `<img src="${escapeAttr(item.imageUrl)}" alt="${escapeAttr(item.name)}" onerror="this.style.display='none'">` : ""}
+        <div class="body">
+          <h3>${escapeHtml(item.name)}</h3>
+          <div class="desc">${escapeHtml(item.description || "")}</div>
+          <div class="row">
+            <div class="price">${euro(item.price)}</div>
+            <button class="btn small primary" id="add-btn-${item.id}">+ Hinzufügen</button>
+          </div>
+        </div>
+      </div>`).join("") + `</div></div>`;
   }).join("");
   itemsCache.forEach(item => { const btn = $("add-btn-"+item.id); if(btn) btn.onclick = () => onAdd(item); });
 }
