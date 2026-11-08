@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Restaurant</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Lora:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -43,10 +43,28 @@ ul{list-style:none;padding:0;margin:.3rem 0}li{display:flex;justify-content:spac
 .warn{color:var(--warn)}
 #toast{position:fixed;top:1rem;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:.5rem 1rem;z-index:40;border-radius:2px}#toast:empty{display:none}
 :focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.paper nav{position:sticky;top:0;background:var(--paper);z-index:6;padding:.5rem 0;margin:.5rem 0}
+input,select,textarea{font-size:16px}
+.bell{position:fixed;right:.8rem;top:50%;width:3.2rem;height:3.2rem;border-radius:50%;border:0;background:var(--acc);color:#fff;font-size:1.4rem;box-shadow:0 3px 12px #0004;cursor:pointer;z-index:24}
+.bell.w{animation:wig 2.4s infinite}
+@keyframes wig{0%,40%,100%{transform:rotate(0)}8%{transform:rotate(-16deg)}16%{transform:rotate(14deg)}24%{transform:rotate(-10deg)}32%{transform:rotate(8deg)}}
+.bell b{position:absolute;top:-.3rem;left:-.3rem;min-width:1.4rem;height:1.4rem;border-radius:1rem;background:var(--warn);font-size:.8rem;line-height:1.4rem;font-family:Lora,serif}.bell b:empty{display:none}
+.cp{position:fixed;top:0;right:0;bottom:0;width:min(380px,100%);height:100dvh;background:var(--paper);z-index:26;display:flex;flex-direction:column;padding:1rem;box-shadow:-4px 0 20px #0004;animation:in .25s}
+@keyframes in{from{transform:translateX(100%)}}
+.cp header{align-items:center}.cp h2{margin:0;border:0}
+#cm{flex:1;overflow:auto;display:flex;flex-direction:column;gap:.5rem;padding:.5rem 0}
+.m{max-width:85%;padding:.4rem .7rem;background:#0000000f;border-radius:10px 10px 10px 2px;word-break:break-word}.m small{display:block;color:var(--soft);font-size:.75rem}
+.m.me{align-self:flex-end;background:var(--acc);color:#fff;border-radius:10px 10px 2px 10px}.m.me small{color:#ffffffbb}
+.cin{display:flex;gap:.4rem;padding-bottom:env(safe-area-inset-bottom)}.cin input{margin:0}.cin .btn{margin:0}
+@media(max-width:600px){body{background:var(--paper)}.paper{margin:0;padding:1rem 1rem 6.5rem;box-shadow:none;min-height:100vh;border-radius:0}
+nav button{flex:1;min-height:46px}.row2{padding:.8rem 0;min-height:64px}.row2 img{width:64px;height:64px}
+.cartbtn{left:.8rem;right:.8rem;transform:none;bottom:calc(.8rem + env(safe-area-inset-bottom));padding:1rem;font-size:1.05rem}
+.btn{min-height:48px}.sm{min-height:0}.pn{max-height:94vh;padding-bottom:calc(1.4rem + env(safe-area-inset-bottom))}.x{width:2.6rem;height:2.6rem}.narrow{margin-top:2rem}}
+@media(prefers-reduced-motion:reduce){.bell.w,.cp{animation:none}}
 @media print{#app,#rev,.x,.btn{display:none}.ov{position:static;background:none}.pn{max-height:none}}
 @media(prefers-reduced-motion:reduce){.fl{animation-duration:.01s}}
 </style></head><body>
-<div id="app"></div><div id="rev"></div><div id="modal"></div><div id="toast"></div>
+<div id="app"></div><div id="rev"></div><div id="modal"></div><div id="toast"></div><div id="chat"></div>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getFirestore,collection,doc,onSnapshot,addDoc,setDoc,updateDoc,deleteDoc,increment} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -69,7 +87,7 @@ const ROLES=['admin','bar','kueche','kellner'],ROLEN={admin:'Admin',bar:'Bar',ku
 const ST={bestellt:'Bestellt',bearbeitung:'Bearbeitet',fertig:'Wird zu dir gebracht',geliefert:'Wurde geliefert'};
 const D={name:'Restaurant',tables:[1,2,3,4,5,6],times:{bar:30,kueche:300},pins:{admin:'0000',bar:'1111',kueche:'2222',kellner:'3333'},revenue:0};
 const S={cats:[],items:[],menus:[],orders:[],tables:{},set:D};
-let tab='cats',gtab='karte',cart=[],lastRev=null;const ready={},pend={};
+let tab='cats',gtab='karte',cart=[],lastRev=null,chatMsgs=[],chatOpen=false;const ready={},pend={};
 const seg=()=>{let s=decodeURIComponent(location.hash.slice(1)||location.pathname.split('/').filter(Boolean).pop()||'').toLowerCase();return s==='index.html'?'':s};
 const toast=m=>{$('#toast').textContent=m;setTimeout(()=>$('#toast').textContent='',2000)};
 const stationOf=c=>S.cats.find(x=>x.id===c)?.station||'kueche';
@@ -83,9 +101,21 @@ onSnapshot(doc(db,'settings','main'),s=>{const d=s.data()||{};S.set={...D,...d,t
   const rv=S.set.revenue||0;
   if(lastRev!==null&&rv>lastRev&&['admin','kellner'].includes(sessionStorage.role)){const f=document.createElement('div');f.className='fl';f.textContent='+ '+eur(rv-lastRev);document.body.append(f);setTimeout(()=>f.remove(),1700)}
   lastRev=rv;render()});
+onSnapshot(collection(db,'chat'),s=>{chatMsgs=s.docs.map(d=>d.data()).sort((a,b)=>a.ts-b.ts).slice(-100);renderChat()});
 addEventListener('hashchange',()=>render());
+function renderChat(){
+  const r=sessionStorage.role,c=$('#chat'),on=ROLES.includes(seg())&&r===seg();
+  if(!on){c.innerHTML='';c.dataset.k='';return}
+  const key=r+chatOpen;
+  if(c.dataset.k!==key){c.dataset.k=key;c.innerHTML=`<button class="bell" data-a="chat" aria-label="Chat">🔔<b id="bd"></b></button>${chatOpen?`<aside class="cp" aria-label="Chat"><header><h2>Chat</h2><button class="x2" data-a="chat" aria-label="Schließen">✕</button></header><div id="cm"></div><div class="cin"><input id="ci" placeholder="Nachricht …" enterkeyhint="send"><button class="btn" data-a="send">Senden</button></div></aside>`:''}`}
+  const last=chatMsgs.length?chatMsgs[chatMsgs.length-1].ts:0,k='chatSeen'+r;
+  if(chatOpen)localStorage[k]=last;
+  const un=chatMsgs.filter(m=>m.ts>(+localStorage[k]||0)&&m.from!==r).length;
+  $('#bd').textContent=un||'';$('.bell').classList.toggle('w',un>0);
+  if(chatOpen){const cm=$('#cm');cm.innerHTML=chatMsgs.map(m=>`<div class="m ${m.from===r?'me':''}"><small>${ROLEN[m.from]||''}</small>${esc(m.text)}</div>`).join('');cm.scrollTop=cm.scrollHeight}}
 
-function render(){const r=seg();
+function render(){render0();renderChat()}
+function render0(){const r=seg();
   if(ROLES.includes(r))return sessionStorage.role===r?staff(r):login(r);
   $('#rev').innerHTML='';
   if(/^\d+$/.test(r)&&S.set.tables.includes(+r))return guest(+r);
@@ -187,6 +217,8 @@ const byId=(a,id)=>S[a].find(x=>x.id===id);
 /* ---------- Aktionen ---------- */
 const act={
   close(){$('#modal').innerHTML=''},
+  chat(){chatOpen=!chatOpen;renderChat();if(chatOpen)$('#ci').focus()},
+  async send(){const i=$('#ci'),t=i.value.trim();if(!t)return;i.value='';await addDoc(collection(db,'chat'),{from:sessionStorage.role,text:t,ts:Date.now()});i.focus()},
   login(){const r=seg();if($('#pin').value===S.set.pins[r]){sessionStorage.role=r;render()}else toast('PIN falsch')},
   logout(){sessionStorage.clear();render()},
   name(d){const v=$('#nm').value.trim();if(!v)return toast('Bitte Namen eingeben');localStorage['g'+seg()]=JSON.stringify({session:d.s,name:v});act.close();render()},
@@ -227,6 +259,7 @@ const act={
     o=>setDoc(doc(db,'settings','main'),{name:o.name,times:{bar:o.tb,kueche:o.tk},tables:o.tl.split(',').map(x=>+x.trim()).filter(Boolean),pins:{admin:o.pa,bar:o.pb,kueche:o.pk,kellner:o.pw}},{merge:true}))}
 };
 document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(el&&act[el.dataset.a])act[el.dataset.a](el.dataset)});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='ci')act.send()});
 function tick(){document.querySelectorAll('.cd').forEach(e=>{const s=Math.round((e.dataset.u-Date.now())/1000);e.textContent=s>0?`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`:'gleich fertig'})}
 setInterval(tick,1000);
 </script></body></html>
