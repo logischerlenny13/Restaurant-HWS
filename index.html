@@ -1,1001 +1,232 @@
 <!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Bestellsystem HWS</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Restaurant</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Lora:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  /* --- NEUES DESIGN: WEISS & GOLD --- */
-  :root {
-    --bg-main: #fdfdfd;      /* Reines Weiß für den Hintergrund */
-    --bg-card: #ffffff;      /* Reines Weiß für Karten */
-    --bg-hover: #f9f9f9;
-    --text-main: #333333;    /* Dunkelgrau für normalen Text (für gute Lesbarkeit) */
-    --text-muted: #888888;   /* Sanftes Grau für Nebentext */
-    
-    --accent: #d4af37;       /* Edles Gold für Buttons, Preise und Überschriften */
-    --accent-hover: #b5952f;
-    --success: #2e7d32;      /* Grün für Umsatz/Bezahlen */
-    --danger: #d32f2f;       /* Rot für Storno / Löschen */
-    --bar-color: #8b5cf6;    /* Violett für die Bar (zur Unterscheidung) */
-    
-    --radius: 12px;
-    --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    --border: 1px solid #eeeeee;
-  }
-  
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0; scroll-behavior: smooth;}
-  body{ background:var(--bg-main); color:var(--text-main); font-family:'Poppins', sans-serif; font-weight: 300; min-height:100vh; }
-  
-  /* Alle Überschriften in Gold */
-  h1,h2,h3{ font-weight:600; margin:0 0 4px 0; letter-spacing: -0.01em; color: var(--accent); }
-  
-  .eyebrow{ font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted); font-weight:600; margin-bottom:8px; }
-  .screen{ display:none; min-height:100vh; animation: fadeIn 0.3s ease; }
-  .screen.active{ display:block; }
-  
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-  .topbar{ display:flex; align-items:center; justify-content:space-between; padding:16px 24px; border-bottom:var(--border); background:rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100;}
-  .brand{ display:flex; align-items:baseline; gap:10px; }
-  .brand h1{ font-size:24px; color:var(--accent); margin:0;}
-  .brand .tag{ font-size:12px; color:var(--text-muted); font-weight: 500; }
-  
-  .btn{ font-family:'Poppins', sans-serif; font-weight:500; font-size:14px; border:1px solid var(--accent); background:var(--bg-card); color:var(--accent); padding:12px 20px; border-radius:10px; cursor:pointer; transition:all .2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
-  .btn:hover{ background:var(--bg-hover); transform: translateY(-1px); }
-  .btn:active{ transform:translateY(1px); }
-  .btn.primary{ background:var(--accent); color:#fff; border-color:var(--accent);}
-  .btn.primary:hover{ background:var(--accent-hover); box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3); }
-  .btn.success{ background:var(--success); color:#fff; border-color:var(--success);}
-  .btn.success:hover{ filter:brightness(1.1); box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3); }
-  .btn.rust{ background:var(--bg-card); color:var(--danger); border-color:var(--danger); box-shadow:none;}
-  .btn.rust:hover{ background:var(--danger); color:#fff; }
-  .btn.bar-btn{ background:var(--bar-color); color:#fff; border-color:var(--bar-color);}
-  .btn.bar-btn:hover{ filter:brightness(1.1); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3); }
-  .btn.ghost{ background:transparent; box-shadow:none; border:1px solid var(--text-muted); color:var(--text-muted);}
-  .btn.small{ padding:8px 14px; font-size:12px; border-radius:8px;}
-
-  .wrap { max-width:880px; margin:0 auto; padding:60px 24px; position: relative; }
-  .signature{ font-size:clamp(40px,8vw,64px); line-height:1.1; margin-bottom:12px; color:var(--accent); font-weight:700;}
-  
-  /* FIX für das Handy: Als echter Button definiert mit touch-action */
-  .gear-icon { position: absolute; top: 12px; right: 12px; cursor: pointer; color: var(--accent); transition: color 0.2s; padding: 16px; background:transparent; border:none; z-index:9999; touch-action: manipulation; outline: none; }
-  .gear-icon:hover { opacity: 0.7; }
-  
-  .role-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; max-width: 800px; margin: 0 auto; }
-  .role-card{ border:var(--border); border-radius:var(--radius); background:var(--bg-card); padding:32px 24px; cursor:pointer; box-shadow:var(--shadow); transition:all .3s ease; text-align:center; }
-  .role-card:hover{ transform:translateY(-5px); border-color:var(--accent); box-shadow: 0 12px 30px rgba(212, 175, 55, 0.15);}
-  
-  .login-card{ border:var(--border); background:var(--bg-card); border-radius:var(--radius); padding:32px; box-shadow:var(--shadow); width: 100%; max-width: 400px; margin: 40px auto;}
-  .field{ margin-bottom:20px; text-align: left;}
-  .field label{ display:block; font-size:12px; font-weight:600; margin-bottom:8px; color:var(--text-muted); }
-  .field input, .field select, .field textarea{ width:100%; padding:14px; border:var(--border); border-radius:8px; font-family:'Poppins',sans-serif; font-size:15px; background:var(--bg-main); color:var(--text-main); transition: all 0.2s ease; }
-  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--accent); background:#fff; box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);}
-  .error-msg{ color:var(--danger); font-size:13px; margin-top:8px; min-height:16px; }
-  .back-link{ display:inline-block; margin-bottom:24px; font-size:13px; color:var(--text-muted); cursor:pointer; font-weight: 500;}
-  .back-link:hover { color: var(--accent); }
-  
-  .content{ max-width:1100px; margin:0 auto; padding:32px 24px 120px; }
-  .tabs{ display:flex; gap:12px; margin-bottom:32px; flex-wrap:wrap; border-bottom: var(--border); padding-bottom: 16px;}
-  .tab-btn{ font-family:'Poppins',sans-serif; font-weight:500; font-size:14px; padding:10px 20px; background:transparent; color:var(--text-muted); border:none; cursor:pointer; border-radius:8px; transition:all 0.2s; }
-  .tab-btn:hover{ color:var(--text-main); background:var(--bg-hover); }
-  .tab-btn.active{ background:var(--accent); color:#fff; }
-  .tab-panel{ display:none; animation: fadeIn 0.3s ease; }
-  .tab-panel.active{ display:block; }
-
-  .category-title{ display:flex; align-items:baseline; gap:10px; margin-bottom:24px; border-bottom:var(--border); padding-bottom:12px; }
-  
-  .item-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:24px; margin-bottom:48px;}
-  .item-card{ border:var(--border); background:var(--bg-card); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column; transition: transform 0.3s ease; }
-  .item-card:hover{ transform:translateY(-5px); border-color:var(--accent); box-shadow: 0 12px 30px rgba(212, 175, 55, 0.1);}
-  .item-card img{ width:100%; height:180px; object-fit:cover; display:block; border-bottom:var(--border); background:var(--bg-hover); }
-  .item-card .body{ padding:20px; display:flex; flex-direction:column; gap:12px; flex:1; }
-  .item-card h3{ font-size:18px; margin:0;}
-  .item-card .desc{ font-size:13px; color:var(--text-muted); flex:1; line-height: 1.5; font-weight:400;}
-  .item-card .row{ display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top: 16px; border-top: var(--border);}
-  .price{ font-weight:600; font-size:18px; color:var(--accent); }
-
-  /* Warenkorb Leiste unten */
-  .cart-bar-trigger{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--accent); color:#fff; padding:16px 32px; border-radius:30px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 10px 30px rgba(212, 175, 55, 0.4); z-index: 100; width:90%; max-width:400px; cursor:pointer; transition: transform 0.2s; }
-  .cart-bar-trigger:hover{ transform:translateX(-50%) scale(1.02); }
-  .cart-bar-trigger .cart-items{ font-weight:600; font-size:15px; }
-  .cart-bar-trigger .cart-total{ font-weight:700; font-size:18px; }
-
-  .ticket-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px; }
-  .ticket{ border:var(--border); background:var(--bg-card); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); position:relative; }
-  .ticket.bar-ticket::before{ content:""; position:absolute; top:0; left:0; right:0; height:4px; background:var(--bar-color); border-radius: var(--radius) var(--radius) 0 0; }
-  .ticket.kueche-ticket::before{ content:""; position:absolute; top:0; left:0; right:0; height:4px; background:var(--accent); border-radius: var(--radius) var(--radius) 0 0; }
-  
-  .ticket .tk-table{ font-size:32px; font-weight:700; margin-top:8px; color:var(--text-main); }
-  .ticket .tk-item{ font-size:18px; font-weight:500; margin:16px 0 8px; color:var(--text-main);}
-  
-  .badge{ display:inline-block; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; padding:4px 10px; border-radius:8px; background:var(--bg-hover); color:var(--text-muted); border: 1px solid #ddd;}
-  
-  .list-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; border:var(--border); background:var(--bg-card); padding:16px 20px; border-radius:12px; margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,0.03); flex-wrap:wrap;}
-  .list-row .left{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
-
-  @keyframes blinkerAlert { 50% { border-color: var(--danger); box-shadow: 0 0 15px rgba(211,47,47,0.2); } }
-  .blink-alert { animation: blinkerAlert 1.2s linear infinite; }
-  
-  @keyframes pulseMoney {
-    0% { transform: scale(1); border-color: var(--border); }
-    50% { transform: scale(1.05); border-color: var(--success); box-shadow: 0 0 20px rgba(46, 125, 50, 0.2); color: var(--success);}
-    100% { transform: scale(1); border-color: var(--border); }
-  }
-  .pulse-money-anim { animation: pulseMoney 1s ease-out; }
-
-  /* Modals */
-  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:999; align-items:center; justify-content:center; padding:20px; backdrop-filter: blur(4px); }
-  .modal-overlay.active { display:flex; animation: fadeIn 0.3s ease; }
-  .modal-content { background:var(--bg-card); padding:32px; border-radius:var(--radius); border:var(--border); width:100%; max-width:500px; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.15); max-height: 90vh; display: flex; flex-direction: column;}
-  .modal-body { overflow-y: auto; padding-right: 8px; margin-bottom: 20px; }
-  .close-modal { position:absolute; top:16px; right:16px; cursor:pointer; color:var(--text-muted); padding:10px; font-size: 24px; line-height:1;}
-  .close-modal:hover { color: var(--accent); }
-  
-  .tip-grid, .pay-method-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom: 24px; }
-  .tip-btn { padding:14px; border:var(--border); border-radius:10px; background:var(--bg-hover); color:var(--text-main); cursor:pointer; text-align:center; transition:0.2s; font-weight:500;}
-  .tip-btn.active { background:var(--accent); color:#fff; border-color:var(--accent); }
-
-  .floating-call { position:fixed; bottom:80px; right:20px; z-index:90; background:var(--bg-card); border:1px solid var(--accent); color:var(--accent); padding:14px 20px; border-radius:30px; cursor:pointer; box-shadow:var(--shadow); display:flex; align-items:center; gap:8px; font-weight:600; font-size: 14px;}
-  .floating-call:hover { background:var(--accent); color:#fff; }
-  
-  .badges-row { display: flex; gap: 6px; margin: 8px 0; flex-wrap: wrap; }
-  .badge-tag { font-size: 10px; padding: 4px 8px; border-radius: 6px; font-weight:600; background:var(--bg-hover); color:var(--text-muted); border:1px solid #ddd;}
-  
-  .sold-out { opacity: 0.5; filter: grayscale(1); pointer-events: none;}
-  .sold-out-badge { position: absolute; top: 12px; right: 12px; background: var(--danger); color: #fff; padding: 4px 10px; font-size: 10px; border-radius: 6px; font-weight: 700; text-transform: uppercase;}
-  
-  /* Schalter */
-  .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
-  .switch input { opacity: 0; width: 0; height: 0; }
-  .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ddd; border-radius: 22px; transition: .3s; }
-  .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: #fff; border-radius: 50%; transition: .3s; box-shadow:0 2px 4px rgba(0,0,0,0.2);}
-  input:checked + .slider { background-color: var(--success); }
-  input:checked + .slider:before { transform: translateX(18px); }
-
-  .revenue-widget { position:fixed; bottom:24px; right:24px; z-index:900; background:var(--bg-card); border:var(--border); padding:16px 24px; border-radius:var(--radius); box-shadow:var(--shadow); text-align:right; }
-</style>
-</head>
-<body>
-
-<!-- UMSATZ WIDGET (Personal) -->
-<div id="staff-revenue-widget" class="revenue-widget" style="display:none;">
-  <div class="eyebrow" style="margin:0;">Tagesumsatz</div>
-  <div id="staff-revenue-amount" style="font-size:24px; font-weight:700; color:var(--success); margin-top:4px;">0,00 €</div>
-</div>
-
-<!-- ============ START (GAST) ============ -->
-<div id="screen-start" class="screen active">
-  <!-- GEFIXT FÜR MOBILE: Als Button definiert -->
-  <button class="gear-icon" onclick="showScreen('screen-staff-select')">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-  </button>
-  <div class="wrap" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 85vh;">
-    <div style="text-align: center; margin-bottom: 40px;">
-      <div class="eyebrow" style="color:var(--accent);">Willkommen bei</div>
-      <div class="signature">HWS</div>
-      <div style="color:var(--text-muted);">Bitte Tischnummer eingeben</div>
-    </div>
-    
-    <div class="login-card">
-      <div class="field">
-        <label>Tischnummer</label>
-        <input type="text" id="kunde-tisch-input" inputmode="numeric" placeholder="z. B. 7">
-      </div>
-      <button class="btn primary" style="width:100%; padding: 14px;" onclick="kundeLogin()">Speisekarte öffnen</button>
-      <div class="error-msg" id="kunde-login-error"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ============ MITARBEITER AUSWAHL ============ -->
-<div id="screen-staff-select" class="screen">
-  <div class="wrap">
-    <div class="back-link" onclick="showScreen('screen-start')">&larr; Zurück zum Start</div>
-    <div class="eyebrow" style="color:var(--accent);">Interner Bereich</div>
-    <div class="signature">Mitarbeiter Login</div>
-    <div class="role-grid" style="margin-top: 40px;">
-      <div class="role-card" onclick="showScreen('screen-kellner-login')"><h3 style="color:var(--text-main);">Kellner</h3></div>
-      <div class="role-card" onclick="showScreen('screen-kueche-login')"><h3 style="color:var(--text-main);">Küche</h3></div>
-      <div class="role-card" onclick="showScreen('screen-bar-login')" style="border-color:var(--bar-color);"><h3 style="color:var(--bar-color);">Bar</h3></div>
-      <div class="role-card" onclick="showScreen('screen-admin-login')"><h3 style="color:var(--text-main);">Admin</h3></div>
-    </div>
-  </div>
-</div>
-
-<!-- ============ KUNDE MENU ============ -->
-<div id="screen-kunde-menu" class="screen">
-  <div class="topbar">
-    <div class="brand"><h1 id="kunde-tisch-title">Tisch —</h1></div>
-    <div class="topbar-right"><button class="btn ghost small" onclick="logoutTo('screen-start')">Verlassen</button></div>
-  </div>
-  
-  <div class="content">
-    <div class="tabs">
-      <button class="tab-btn active" data-ktab="speisekarte" onclick="kundeTab('speisekarte')">Speisekarte</button>
-      <button class="tab-btn" data-ktab="bestellungen" onclick="kundeTab('bestellungen')">Tisch-Übersicht</button>
-    </div>
-
-    <div id="kunde-tab-speisekarte" class="tab-panel active">
-      <div id="kunde-menu-container"></div>
-    </div>
-
-    <div id="kunde-tab-bestellungen" class="tab-panel">
-      <div class="eyebrow">Bereits bestellt</div>
-      <div id="kunde-orders-container"></div>
-      <div class="list-row" style="margin-top:16px; background:var(--bg-hover);">
-        <div style="font-weight:600;">Gesamt (ohne Trinkgeld)</div>
-        <div style="font-size:20px; font-weight:700; color:var(--success);" id="kunde-orders-total">0,00 €</div>
-      </div>
-      <button class="btn success" style="width:100%; margin-top:24px; padding:18px;" onclick="openPayModal()">Rechnung anfordern & Bezahlen</button>
-    </div>
-  </div>
-
-  <!-- Schwebender Warenkorb Button -->
-  <div class="cart-bar-trigger" id="kunde-cart-trigger" style="display:none;" onclick="openCartModal()">
-    <div class="cart-items" id="kunde-cart-summary">0 Artikel</div>
-    <div class="cart-total" id="kunde-cart-total">0,00 €</div>
-  </div>
-
-  <div class="floating-call" onclick="callWaiterSimple()">
-    Kellner rufen
-  </div>
-</div>
-
-<!-- ============ KUNDE WARENKORB MODAL ============ -->
-<div id="modal-cart" class="modal-overlay">
-  <div class="modal-content">
-    <div class="close-modal" onclick="closeCartModal()">✕</div>
-    <h2 style="margin-bottom:20px;">Warenkorb</h2>
-    
-    <div class="modal-body" id="cart-items-list">
-      <!-- Wird via JS befüllt -->
-    </div>
-    
-    <div style="border-top:var(--border); padding-top:20px; margin-top:auto;">
-      <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:700; margin-bottom:20px;">
-        <span>Summe:</span>
-        <span id="cart-modal-total" style="color:var(--success);">0,00 €</span>
-      </div>
-      <button class="btn success" style="width:100%; padding:16px; font-size: 16px;" onclick="kundePlaceOrder()">Zahlungspflichtig bestellen</button>
-    </div>
-  </div>
-</div>
-
-<!-- ============ KUNDE BEZAHLEN MODAL ============ -->
-<div id="modal-pay" class="modal-overlay">
-  <div class="modal-content">
-    <div class="close-modal" onclick="closePayModal()">✕</div>
-    <h2 style="margin-bottom:24px;">Bezahlen</h2>
-    
-    <div class="field"><label>Zahlungsart</label></div>
-    <div class="pay-method-grid">
-      <div class="tip-btn active" id="pay-method-bar" onclick="selectPayMethod('bar')">Barzahlung</div>
-      <div class="tip-btn" id="pay-method-paypal" onclick="selectPayMethod('paypal')">PayPal</div>
-    </div>
-
-    <div class="field"><label>Trinkgeld (Optional)</label></div>
-    <div class="tip-grid">
-      <div class="tip-btn active" data-tip="0" onclick="selectTip(0)">0 %</div>
-      <div class="tip-btn" data-tip="2" onclick="selectTip(2)">2 %</div>
-      <div class="tip-btn" data-tip="5" onclick="selectTip(5)">5 %</div>
-      <div class="tip-btn" data-tip="10" onclick="selectTip(10)">10 %</div>
-    </div>
-
-    <button class="btn success" style="width:100%; padding:16px;" onclick="submitPaymentRequest()">Kellner zum Bezahlen rufen</button>
-  </div>
-</div>
-
-<!-- ============ ADMIN LOGIN & PANEL ============ -->
-<div id="screen-admin-login" class="screen">
-  <div class="login-card">
-    <div class="back-link" onclick="showScreen('screen-staff-select')">&larr; Zurück</div>
-    <div class="eyebrow">Admin</div><h2>Anmelden</h2>
-    <div class="field" style="margin-top:20px;"><label>Passwort</label><input type="password" id="admin-pw-input"></div>
-    <button class="btn primary" style="width:100%;" onclick="roleLogin('admin')">Anmelden</button>
-  </div>
-</div>
-
-<div id="screen-admin-panel" class="screen">
-  <div class="topbar">
-    <div class="brand"><h1>Admin</h1></div>
-    <div class="topbar-right"><button class="btn ghost small" onclick="logoutTo('screen-start')">Abmelden</button></div>
-  </div>
-  <div class="content">
-    <div class="tabs">
-      <button class="tab-btn active" data-atab="dashboard" onclick="adminTab('dashboard')">Dashboard</button>
-      <button class="tab-btn" data-atab="tische" onclick="adminTab('tische')">Tische</button>
-      <button class="tab-btn" data-atab="kategorien" onclick="adminTab('kategorien')">Kategorien</button>
-      <button class="tab-btn" data-atab="artikel" onclick="adminTab('artikel')">Artikel</button>
-      <button class="tab-btn" data-atab="passwoerter" onclick="adminTab('passwoerter')">System</button>
-    </div>
-
-    <div id="admin-tab-dashboard" class="tab-panel active">
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
-        <div class="role-card" style="padding: 40px 20px;">
-          <div class="eyebrow">Aktueller Tagesumsatz</div>
-          <div style="font-size: 48px; font-weight:700; color:var(--success); margin:10px 0;" id="admin-daily-revenue">0,00 €</div>
-          <div style="font-size:12px; color:var(--text-muted);">Aktualisiert sich sofort bei Bestellung</div>
-        </div>
-        <div class="role-card" style="padding: 40px 20px;">
-          <div class="eyebrow">Trinkgeld-Kasse</div>
-          <div style="font-size: 48px; font-weight:700; color:var(--accent); margin:10px 0;" id="admin-daily-tip">0,00 €</div>
-          <div style="font-size:12px; color:var(--text-muted);">Wird bei Bezahlen berechnet</div>
-        </div>
-      </div>
-      <button class="btn ghost" style="width:100%; margin-bottom:32px;" onclick="resetRevenue()">Umsätze nullstellen (Test)</button>
-
-      <div class="eyebrow" style="font-size: 14px; margin-bottom: 16px;">Letzte Aktivitäten</div>
-      <div id="admin-activity-log" style="display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto; padding-right: 10px;"></div>
-    </div>
-
-    <div id="admin-tab-tische" class="tab-panel">
-      <form class="login-card" onsubmit="return adminAddTable(event)" style="margin:0 0 24px 0; max-width:100%; display:flex; gap:16px; align-items:flex-end; padding:20px;">
-        <div class="field" style="margin:0; flex:1;"><label>Neue Tischnummer</label><input type="text" id="admin-new-table" required></div>
-        <button class="btn primary" type="submit">Tisch anlegen</button>
-      </form>
-      <div id="admin-tables-list"></div>
-    </div>
-    
-    <div id="admin-tab-kategorien" class="tab-panel">
-      <form class="login-card" onsubmit="return adminAddCategory(event)" style="margin:0 0 24px 0; max-width:100%; display:flex; gap:16px; align-items:flex-end; padding:20px; flex-wrap:wrap;">
-        <div class="field" style="margin:0; flex:1; min-width:200px;"><label>Neue Kategorie</label><input type="text" id="admin-new-category" required></div>
-        <div class="field" style="margin:0; min-width:150px;"><label>Ziel-Station</label>
-          <select id="admin-cat-target">
-            <option value="kueche">Küche</option>
-            <option value="bar">Bar</option>
-          </select>
-        </div>
-        <button class="btn primary" type="submit">Anlegen</button>
-      </form>
-      <div id="admin-categories-list"></div>
-    </div>
-    
-    <div id="admin-tab-artikel" class="tab-panel">
-      <div class="login-card" style="max-width:100%; margin:0 0 32px 0;">
-        <h3 style="margin-bottom:20px;">Neuen Artikel anlegen</h3>
-        <form onsubmit="return adminAddItem(event)">
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-            <div class="field"><label>Name</label><input type="text" id="admin-item-name" required></div>
-            <div class="field"><label>Preis (€)</label><input type="number" step="0.01" min="0" id="admin-item-price" required></div>
-          </div>
-          <div class="field"><label>Beschreibung</label><textarea id="admin-item-desc" rows="2"></textarea></div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-            <div class="field"><label>Kategorie</label><select id="admin-item-category" required></select></div>
-            <div class="field"><label>Bild-URL (Optional)</label><input type="url" id="admin-item-image"></div>
-          </div>
-          <div class="field">
-            <label>Allergene & Infos</label>
-            <div style="display:flex; gap:16px; margin-top:8px;">
-              <label style="display:flex; align-items:center; gap:6px; font-size:14px;"><input type="checkbox" id="badge-vegan"> 🌱 Vegan</label>
-              <label style="display:flex; align-items:center; gap:6px; font-size:14px;"><input type="checkbox" id="badge-spicy"> 🌶️ Scharf</label>
-            </div>
-          </div>
-          <button class="btn primary" type="submit" style="width:100%;">Artikel speichern</button>
-        </form>
-      </div>
-      <div id="admin-items-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;"></div>
-    </div>
-    
-    <div id="admin-tab-passwoerter" class="tab-panel">
-      <div class="login-card" style="margin:0 0 24px 0;">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-          <span style="font-weight: 500;">PayPal Zahlungen erlauben</span>
-          <label class="switch"><input type="checkbox" id="admin-paypal-toggle" onchange="togglePayPal(this.checked)"><span class="slider"></span></label>
-        </div>
-      </div>
-      <div class="login-card" style="margin:0;">
-        <h3 style="margin-bottom:20px;">Passwörter</h3>
-        <div class="field"><label>Admin</label><input type="text" id="pw-admin"></div>
-        <div class="field"><label>Küche</label><input type="text" id="pw-kueche"></div>
-        <div class="field"><label>Bar</label><input type="text" id="pw-bar"></div>
-        <div class="field"><label>Kellner</label><input type="text" id="pw-kellner"></div>
-        <button class="btn primary" onclick="adminSavePasswords()" style="width:100%;">Speichern</button>
-        <div class="error-msg" id="pw-save-msg" style="color:var(--success); text-align:center;"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ============ KUECHE LOGIN & PANEL ============ -->
-<div id="screen-kueche-login" class="screen">
-  <div class="login-card">
-    <div class="back-link" onclick="showScreen('screen-staff-select')">&larr; Zurück</div>
-    <div class="eyebrow">Küche</div><h2>Anmelden</h2>
-    <div class="field" style="margin-top:20px;"><label>Passwort</label><input type="password" id="kueche-pw-input"></div>
-    <button class="btn primary" style="width:100%;" onclick="roleLogin('kueche')">Anmelden</button>
-  </div>
-</div>
-<div id="screen-kueche-panel" class="screen">
-  <div class="topbar">
-    <div class="brand"><h1>Küche</h1><span class="tag">Zubereitung</span></div>
-    <button class="btn ghost small" onclick="logoutTo('screen-start')">Abmelden</button>
-  </div>
-  <div class="content"><div id="kueche-orders-container"></div></div>
-</div>
-
-<!-- ============ BAR LOGIN & PANEL ============ -->
-<div id="screen-bar-login" class="screen">
-  <div class="login-card">
-    <div class="back-link" onclick="showScreen('screen-staff-select')">&larr; Zurück</div>
-    <div class="eyebrow" style="color:var(--bar-color);">Bar</div><h2 style="color:var(--bar-color);">Anmelden</h2>
-    <div class="field" style="margin-top:20px;"><label>Passwort</label><input type="password" id="bar-pw-input"></div>
-    <button class="btn bar-btn" style="width:100%;" onclick="roleLogin('bar')">Anmelden</button>
-  </div>
-</div>
-<div id="screen-bar-panel" class="screen">
-  <div class="topbar">
-    <div class="brand"><h1 style="color:var(--bar-color);">Bar</h1><span class="tag" style="color:var(--text-muted);">Getränke & Co</span></div>
-    <button class="btn ghost small" onclick="logoutTo('screen-start')">Abmelden</button>
-  </div>
-  <div class="content"><div id="bar-orders-container"></div></div>
-</div>
-
-<!-- ============ KELLNER LOGIN & PANEL ============ -->
-<div id="screen-kellner-login" class="screen">
-  <div class="login-card">
-    <div class="back-link" onclick="showScreen('screen-staff-select')">&larr; Zurück</div>
-    <div class="eyebrow">Kellner</div><h2>Anmelden</h2>
-    <div class="field" style="margin-top:20px;"><label>Passwort</label><input type="password" id="kellner-pw-input"></div>
-    <button class="btn primary" style="width:100%;" onclick="roleLogin('kellner')">Anmelden</button>
-  </div>
-</div>
-<div id="screen-kellner-panel" class="screen">
-  <div class="topbar">
-    <div class="brand"><h1>Kellner</h1></div>
-    <button class="btn ghost small" onclick="logoutTo('screen-start')">Abmelden</button>
-  </div>
-  <div class="content">
-    <div class="tabs">
-      <button class="tab-btn active" data-wtab="tische" onclick="kellnerTab('tische')">Tisch-Übersicht</button>
-      <button class="tab-btn" data-wtab="abholen" onclick="kellnerTab('abholen')">Fertig (Küche/Bar)</button>
-    </div>
-    <div id="kellner-tab-tische" class="tab-panel active"><div id="kellner-tables-container" class="item-grid"></div></div>
-    <div id="kellner-tab-abholen" class="tab-panel"><div id="kellner-fertig-container"></div></div>
-  </div>
-</div>
-
-<!-- ============ KELLNER TISCH MODAL ============ -->
-<div id="modal-kellner-table" class="modal-overlay">
-  <div class="modal-content">
-    <div class="close-modal" onclick="closeKellnerModal()">✕</div>
-    <h2 id="kt-title" style="margin-bottom:20px;">Tisch Details</h2>
-    
-    <div id="kt-alert-box" style="display:none; padding:16px; background:rgba(211, 47, 47, 0.1); border:1px solid var(--danger); border-radius:12px; margin-bottom:20px;">
-      <strong id="kt-alert-text" style="color:var(--danger);"></strong>
-      <button class="btn small" style="margin-top:10px; width: 100%; background:#fff;" onclick="clearTableCall()">Ruf beenden</button>
-    </div>
-
-    <div class="modal-body" id="kt-orders-list"></div>
-    
-    <div style="border-top:var(--border); padding-top:20px;">
-      <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:700; margin-bottom:20px;">
-        <span>Gesamt (inkl. Tipp):</span>
-        <span id="kt-total-sum" style="color:var(--success);">0,00 €</span>
-      </div>
-      <button class="btn success" style="width:100%; padding: 16px;" onclick="markTablePaid()">Tisch bezahlt (Leeren)</button>
-    </div>
-  </div>
-</div>
+:root{--paper:#f6f2e9;--desk:#e4ddcf;--ink:#232a26;--soft:#6c6f66;--acc:#2e4a3d;--line:#c9bfa8;--warn:#8a3b2e}
+*{box-sizing:border-box}body{margin:0;background:var(--desk);color:var(--ink);font:16px/1.6 Lora,Georgia,serif}
+h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;margin:0}
+h1{font-size:2rem}h2{font-size:1.5rem;margin:1.6rem 0 .5rem;border-bottom:1px solid var(--line)}
+.paper{max-width:680px;margin:1.5rem auto 6rem;padding:1.6rem 1.5rem;background:var(--paper);border-radius:2px;box-shadow:0 2px 12px #0002,2px 4px 0 -1px #d8d0bd,4px 8px 0 -2px #cfc6b1}
+.wide{max-width:900px}.narrow{max-width:360px}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:1rem}header span{color:var(--soft)}
+nav{display:flex;gap:.4rem;margin:1rem 0;flex-wrap:wrap}
+nav button{background:none;border:1px solid var(--line);padding:.4rem .9rem;font:inherit;color:var(--ink);border-radius:2px;cursor:pointer}nav .on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.row2{display:flex;align-items:center;gap:.6rem;padding:.55rem 0;cursor:pointer;flex-wrap:wrap}
+.row2 img{width:56px;height:56px;object-fit:cover;border-radius:50%}
+.nm{font-size:1.1rem}.nm small{display:block;color:var(--soft);font-size:.8rem}
+.dots{flex:1;border-bottom:2px dotted var(--line);min-width:20px;transform:translateY(4px)}
+.row2 em{flex-basis:100%;color:var(--acc);font-size:.85rem;font-style:normal}
+.btn{background:var(--acc);color:#fff;border:0;padding:.7rem 1.2rem;font:inherit;border-radius:2px;cursor:pointer;margin:.4rem .4rem 0 0}
+.ghost{background:none;color:var(--acc);border:1px solid var(--acc)}.sm{padding:.3rem .7rem;margin:0}
+.ov{position:fixed;inset:0;background:#1d1f1c99;display:flex;align-items:flex-end;justify-content:center;z-index:20;overflow:auto}
+.pn{position:relative;background:var(--paper);width:100%;max-width:560px;max-height:92vh;overflow:auto;padding:3.4rem 1.4rem 1.4rem;border-radius:6px 6px 0 0}
+@media(min-width:700px){.ov{align-items:center}.pn{border-radius:2px}}
+.x{position:absolute;top:.6rem;left:.6rem;z-index:2;width:2.2rem;height:2.2rem;border-radius:50%;border:0;background:#fffc;font-size:1.1rem;cursor:pointer;box-shadow:0 1px 4px #0003}
+.car{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:.5rem}
+.car img{flex:0 0 100%;scroll-snap-align:center;aspect-ratio:4/3;object-fit:cover;border-radius:2px}
+label{display:block;margin:.7rem 0;font-size:.9rem;color:var(--soft)}
+input,select,textarea{display:block;width:100%;padding:.55rem;margin-top:.2rem;border:1px solid var(--line);background:#fffdf8;font:inherit;color:var(--ink);border-radius:2px}
+.ck{display:flex;gap:.5rem;align-items:center;color:var(--ink)}.ck input{width:auto;margin:0}
+.ord{border-left:3px solid var(--acc);padding:.4rem .8rem;margin:.8rem 0;background:#0000000a}
+ul{list-style:none;padding:0;margin:.3rem 0}li{display:flex;justify-content:space-between;gap:.5rem;align-items:center}
+.tot{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600}
+.cartbtn{position:fixed;left:50%;transform:translateX(-50%);bottom:1rem;background:var(--acc);color:#fff;border:0;padding:.8rem 1.4rem;font:inherit;border-radius:2px;box-shadow:0 3px 12px #0004;cursor:pointer;z-index:10}
+#rev{position:fixed;right:1rem;bottom:1rem;background:var(--ink);color:#fff;padding:.5rem 1rem;border-radius:2px;z-index:5}#rev:empty{display:none}
+.fl{position:fixed;right:1.4rem;bottom:3.6rem;color:var(--acc);font-weight:700;font-size:1.4rem;animation:up 1.6s forwards;z-index:30;background:var(--paper);padding:0 .5rem}
+@keyframes up{to{transform:translateY(-70px);opacity:0}}
+.cd{font-variant-numeric:tabular-nums;font-weight:700;color:var(--warn)}
+.cl{display:flex;gap:.6rem;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px dotted var(--line)}.cl small{display:block;color:var(--soft)}
+.x2{border:0;background:none;color:var(--warn);cursor:pointer;font-size:1rem}
+.tn{position:relative;display:inline-block;margin:.2rem}.tn img{width:64px;height:64px;object-fit:cover}.tn button{position:absolute;top:0;right:0}
+.qty{display:flex;gap:1rem;align-items:center;margin:.6rem 0}.qty button{width:2.2rem;height:2.2rem;border-radius:50%;border:1px solid var(--acc);background:none;font-size:1.2rem;cursor:pointer}
+.warn{color:var(--warn)}
+#toast{position:fixed;top:1rem;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:.5rem 1rem;z-index:40;border-radius:2px}#toast:empty{display:none}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+@media print{#app,#rev,.x,.btn{display:none}.ov{position:static;background:none}.pn{max-height:none}}
+@media(prefers-reduced-motion:reduce){.fl{animation-duration:.01s}}
+</style></head><body>
+<div id="app"></div><div id="rev"></div><div id="modal"></div><div id="toast"></div>
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-import { getFirestore, collection, addDoc, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, where, orderBy, serverTimestamp, limit } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getFirestore,collection,doc,onSnapshot,addDoc,setDoc,updateDoc,deleteDoc,increment} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getStorage,ref,uploadBytes,getDownloadURL} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+const app=initializeApp({
+  apiKey:"AIzaSyAcCCnC5zAbheBKz4YgDagdDPjd1_jlahM",
+  authDomain:"restaurant-karte-10dbf.firebaseapp.com",
+  projectId:"restaurant-karte-10dbf",
+  storageBucket:"restaurant-karte-10dbf.firebasestorage.app",
+  messagingSenderId:"980996852356",
+  appId:"1:980996852356:web:5464402afc8e15169890d1",
+  measurementId:"G-708TLXBBK6"});
+const db=getFirestore(app),st=getStorage(app);
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAcCCnC5zAbheBKz4YgDagdDPjd1_jlahM",
-  authDomain: "restaurant-karte-10dbf.firebaseapp.com",
-  projectId: "restaurant-karte-10dbf",
-  storageBucket: "restaurant-karte-10dbf.firebasestorage.app",
-  messagingSenderId: "980996852356",
-  appId: "1:980996852356:web:5464402afc8e15169890d1"
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const eur=n=>(Math.round(n*100)/100).toFixed(2).replace('.',',')+' €';
+const uid=()=>Math.random().toString(36).slice(2,10);
+const ROLES=['admin','bar','kueche','kellner'],ROLEN={admin:'Admin',bar:'Bar',kueche:'Küche',kellner:'Kellner'};
+const ST={bestellt:'Bestellt',bearbeitung:'Bearbeitet',fertig:'Wird zu dir gebracht',geliefert:'Wurde geliefert'};
+const D={name:'Restaurant',tables:[1,2,3,4,5,6],times:{bar:30,kueche:300},pins:{admin:'0000',bar:'1111',kueche:'2222',kellner:'3333'},revenue:0};
+const S={cats:[],items:[],menus:[],orders:[],tables:{},set:D};
+let tab='cats',gtab='karte',cart=[],lastRev=null;const ready={},pend={};
+const seg=()=>{let s=decodeURIComponent(location.hash.slice(1)||location.pathname.split('/').filter(Boolean).pop()||'').toLowerCase();return s==='index.html'?'':s};
+const toast=m=>{$('#toast').textContent=m;setTimeout(()=>$('#toast').textContent='',2000)};
+const stationOf=c=>S.cats.find(x=>x.id===c)?.station||'kueche';
+const badges=(i,w)=>[['vegan','🌱'],['glutenfrei','🌾'],['vegetarisch','🥕']].filter(x=>i[x[0]]).map(x=>`<span title="${x[0]}">${x[1]}${w?' '+x[0]:''}</span>`).join(' ');
+const save=(c,id,o)=>{const {id:_,...d}=o;return id?setDoc(doc(db,c,id),d):addDoc(collection(db,c),d)};
+
+const col=(n,k)=>onSnapshot(collection(db,n),s=>{S[k]=s.docs.map(d=>({id:d.id,...d.data()}));render()});
+col('categories','cats');col('items','items');col('menus','menus');col('orders','orders');
+onSnapshot(collection(db,'tables'),s=>{S.tables={};s.docs.forEach(d=>S.tables[d.id]=d.data());ready.tables=true;render()});
+onSnapshot(doc(db,'settings','main'),s=>{const d=s.data()||{};S.set={...D,...d,times:{...D.times,...d.times},pins:{...D.pins,...d.pins}};
+  const rv=S.set.revenue||0;
+  if(lastRev!==null&&rv>lastRev&&['admin','kellner'].includes(sessionStorage.role)){const f=document.createElement('div');f.className='fl';f.textContent='+ '+eur(rv-lastRev);document.body.append(f);setTimeout(()=>f.remove(),1700)}
+  lastRev=rv;render()});
+addEventListener('hashchange',()=>render());
+
+function render(){const r=seg();
+  if(ROLES.includes(r))return sessionStorage.role===r?staff(r):login(r);
+  $('#rev').innerHTML='';
+  if(/^\d+$/.test(r)&&S.set.tables.includes(+r))return guest(+r);
+  $('#app').innerHTML=`<div class="paper narrow"><h1>${esc(S.set.name)}</h1><p>Bitte scanne den Code an deinem Tisch.</p></div>`}
+
+function login(r){if($('#pin'))return;$('#rev').innerHTML='';
+  $('#app').innerHTML=`<div class="paper narrow"><h1>${ROLEN[r]}</h1><label>PIN<input id="pin" type="password" inputmode="numeric"></label><button class="btn" data-a="login">Anmelden</button></div>`}
+
+/* ---------- Gast ---------- */
+function askName(n,session){if($('#nm'))return;
+  $('#modal').innerHTML=`<div class="ov"><div class="pn"><h2>Willkommen an Tisch ${n}</h2><label>Wie heißt du? Der Name steht auf deiner Bestellung.<input id="nm" maxlength="30"></label><button class="btn" data-a="name" data-s="${session}">Weiter</button></div></div>`}
+
+function karte(){
+  const cats=S.cats.filter(c=>c.active!==false).sort((a,b)=>(a.order||0)-(b.order||0));
+  const row=i=>`<div class="row2" data-a="item" data-i="${i.id}">${i.images?.[0]?`<img src="${esc(i.images[0])}" alt="">`:''}<span class="nm">${esc(i.name)} ${badges(i)}</span><span class="dots"></span><b>${eur(i.price)}</b></div>`;
+  const menus=S.menus.map(m=>{const its=m.itemIds.map(id=>S.items.find(x=>x.id===id)).filter(Boolean);const sv=its.reduce((a,x)=>a+x.price,0)-m.price;
+    return `<div class="row2" data-a="menu" data-i="${m.id}"><span class="nm">${esc(m.name)}<small>${its.map(x=>esc(x.name)).join(', ')}</small></span><span class="dots"></span><b>${eur(m.price)}</b>${sv>0?`<em>Du sparst ${eur(sv)}</em>`:''}</div>`}).join('');
+  return (menus?`<h2>Menüs</h2>${menus}`:'')+cats.map(c=>{const its=S.items.filter(i=>i.catId===c.id);return its.length?`<h2>${esc(c.name)}</h2>${its.map(row).join('')}`:''}).join('')||'<p>Die Karte ist gerade leer.</p>'}
+
+function guest(n){
+  const t=S.tables[n];
+  if(!t){if(ready.tables&&!pend[n]){pend[n]=1;setDoc(doc(db,'tables',String(n)),{session:uid()})}return $('#app').innerHTML='<div class="paper"><p>Lade …</p></div>'}
+  const g=JSON.parse(localStorage['g'+n]||'{}');
+  if(g.session!==t.session)return askName(n,t.session);
+  const mine=S.orders.filter(o=>o.table===n&&o.session===t.session);
+  const ords=mine.filter(o=>o.kind!=='pay'),pay=mine.find(o=>o.kind==='pay'&&o.status!=='geliefert');
+  const total=ords.reduce((a,o)=>a+o.total,0);let body='';
+  if(gtab==='karte')body=karte();
+  else if(gtab==='orders')body=ords.length?ords.map(o=>`<div class="ord"><b>${esc(o.name)}</b> · ${ST[o.status]}<ul>${o.lines.map(l=>`<li>${esc(l.t)}<i>${eur(l.price)}</i></li>`).join('')}</ul></div>`).join('')+`<p class="tot">Summe ${eur(total)}</p>`:'<p>Noch nichts bestellt.</p>';
+  else body=!ords.length?'<p>Es gibt noch nichts zu bezahlen.</p>':pay?`<p class="tot">Der Kellner kommt zu dir (${esc(pay.method)}).</p>`:`<p class="tot">Offen: ${eur(total)}</p><button class="btn" data-a="pay" data-m="PayPal">PayPal</button><button class="btn" data-a="pay" data-m="Bar">In bar</button><button class="btn" data-a="pay" data-m="Überweisung">Überweisung</button><br><button class="btn ghost" data-a="invoice">Rechnung ansehen</button>`;
+  const cnt=cart.reduce((a,l)=>a+l.qty,0);
+  $('#app').innerHTML=`<div class="paper"><header><h1>${esc(S.set.name)}</h1><span>Tisch ${n} · ${esc(g.name)}</span></header><nav>${[['karte','Karte'],['orders','Bestellungen'],['pay','Bezahlen']].map(k=>`<button class="${gtab===k[0]?'on':''}" data-a="gt" data-k="${k[0]}">${k[1]}</button>`).join('')}</nav>${body}</div>${gtab==='karte'?`<button class="cartbtn" data-a="cart">Warenkorb (${cnt}) · ${eur(cart.reduce((a,l)=>a+l.price,0))}</button>`:''}`}
+
+function openItem(id){
+  const i=S.items.find(x=>x.id===id);
+  const rem=(i.edit&&i.removable||'').split(',').map(s=>s.trim()).filter(Boolean);
+  $('#modal').innerHTML=`<div class="ov"><div class="pn"><button class="x" data-a="close" aria-label="Schließen">✕</button><div class="car">${(i.images||[]).map(u=>`<img src="${esc(u)}" alt="">`).join('')}</div><h2>${esc(i.name)} ${badges(i,1)}</h2><p>${esc(i.desc)}</p><p class="tot">${eur(i.price)}</p>
+  ${rem.length?`<div><b>Zutaten</b>${rem.map(r=>`<label class="ck"><input type="checkbox" data-r="${esc(r)}">ohne ${esc(r)}</label>`).join('')}</div>`:''}
+  ${i.edit&&i.drink?`<label>Eiswürfel<select data-o><option>mit Eiswürfeln</option><option>ohne Eiswürfel</option></select></label><label>Kohlensäure<select data-o><option>mit Kohlensäure</option><option>ohne Kohlensäure</option></select></label>`:''}
+  <div class="qty"><button data-a="q" data-d="-1">−</button><b id="q">1</b><button data-a="q" data-d="1">+</button></div>
+  <button class="btn" data-a="add" data-i="${i.id}">Zum Warenkorb hinzufügen</button></div></div>`}
+
+/* ---------- Personal ---------- */
+const oCard=(o,b,x='')=>`<div class="ord"><b>Tisch ${o.table} · ${esc(o.name)}</b> ${x}<ul>${(o.lines||[]).map(l=>`<li>${esc(l.t)}</li>`).join('')}</ul>${b}</div>`;
+const sb=(o,s,l)=>`<button class="btn" data-a="st" data-o="${o.id}" data-s="${s}">${l}</button>`;
+const cd=o=>`<span class="cd" data-u="${o.readyAt}"></span> `;
+
+function staff(r){
+  let body='';
+  if(r==='admin')body=admin();
+  else if(r==='kellner'){
+    const nl=S.orders.filter(o=>o.kind!=='pay');
+    const hol=nl.filter(o=>o.status==='fertig').sort((a,b)=>a.ts-b.ts),soon=nl.filter(o=>o.status==='bearbeitung').sort((a,b)=>a.readyAt-b.readyAt),pay=S.orders.filter(o=>o.kind==='pay'&&o.status!=='geliefert');
+    body=`<h2>Jetzt abholen</h2>${hol.map(o=>oCard(o,sb(o,'geliefert','Geliefert'),`<em>Abholung bei ${o.station==='bar'?'Bar':'Küche'}</em>`)).join('')||'<p>Nichts abzuholen.</p>'}
+    <h2>Gleich fertig</h2>${soon.map(o=>oCard(o,'',`${cd(o)}<em>${o.station==='bar'?'Bar':'Küche'}</em>`)).join('')||'<p>Nichts in Arbeit.</p>'}
+    <h2>Kassieren</h2>${pay.map(o=>`<div class="ord"><b>Tisch ${o.table} · ${esc(o.name)}</b><p>${eur(o.total)} · ${esc(o.method)}</p><button class="btn" data-a="paid" data-o="${o.id}" data-n="${o.table}">Fertig</button></div>`).join('')||'<p>Keine Zahlungen offen.</p>'}`}
+  else{
+    const os=S.orders.filter(o=>o.station===r&&['bestellt','bearbeitung'].includes(o.status)).sort((a,b)=>a.ts-b.ts);
+    body=os.map(o=>oCard(o,o.status==='bestellt'?sb(o,'bearbeitung','In Bearbeitung'):cd(o)+sb(o,'fertig','Fertig'))).join('')||'<p>Keine offenen Aufträge.</p>'}
+  $('#app').innerHTML=`<div class="paper wide"><header><h1>${ROLEN[r]}</h1><button class="btn ghost sm" data-a="logout">Abmelden</button></header>${body}</div>`;
+  $('#rev').innerHTML=['admin','kellner'].includes(r)?`Einnahmen ${eur(S.set.revenue||0)}`:'';tick()}
+
+function admin(){
+  const tabs=[['cats','Kategorien'],['items','Artikel'],['menus','Menüs'],['guests','Tische'],['set','Einstellungen']];
+  let b='';
+  if(tab==='cats')b=`<button class="btn" data-a="newcat">Kategorie hinzufügen</button>`+S.cats.sort((a,b)=>(a.order||0)-(b.order||0)).map(c=>`<div class="row2"><span class="nm">${esc(c.name)}<small>geht zu ${c.station==='bar'?'Bar':'Küche'}</small></span><span class="dots"></span><button class="btn ghost sm" data-a="togcat" data-i="${c.id}">${c.active===false?'Deaktiviert':'Aktiv'}</button><button class="btn ghost sm" data-a="editcat" data-i="${c.id}">Bearbeiten</button><button class="x2" data-a="delcat" data-i="${c.id}">✕</button></div>`).join('');
+  if(tab==='items')b=`<button class="btn" data-a="newitem">Artikel hinzufügen</button>`+S.items.map(i=>`<div class="row2"><span class="nm">${esc(i.name)}<small>${esc(S.cats.find(c=>c.id===i.catId)?.name||'ohne Kategorie')}</small></span><span class="dots"></span><b>${eur(i.price)}</b><button class="btn ghost sm" data-a="edititem" data-i="${i.id}">Bearbeiten</button><button class="x2" data-a="delitem" data-i="${i.id}">✕</button></div>`).join('');
+  if(tab==='menus')b=`<button class="btn" data-a="newmenu">Menü erstellen</button>`+S.menus.map(m=>`<div class="row2"><span class="nm">${esc(m.name)}</span><span class="dots"></span><b>${eur(m.price)}</b><button class="btn ghost sm" data-a="editmenu" data-i="${m.id}">Bearbeiten</button><button class="x2" data-a="delmenu" data-i="${m.id}">✕</button></div>`).join('');
+  if(tab==='guests')b=S.set.tables.map(n=>{const t=S.tables[n];const os=t?S.orders.filter(o=>o.table===n&&o.session===t.session&&o.kind!=='pay'):[];
+    return `<div class="ord"><b>Tisch ${n}</b> · ${eur(os.reduce((a,o)=>a+o.total,0))} <button class="btn ghost sm" data-a="clean" data-n="${n}">Tisch leeren</button>${os.map(o=>`<div><em>${esc(o.name)}</em> · ${ST[o.status]}<ul>${o.lines.map((l,k)=>`<li>${esc(l.t)} <i>${eur(l.price)}</i><button class="x2" data-a="rmline" data-o="${o.id}" data-k="${k}" title="Entfernen">✕</button></li>`).join('')}</ul></div>`).join('')}</div>`}).join('');
+  if(tab==='set')b=`<p>Bearbeitungszeit Bar: ${S.set.times.bar} s · Küche: ${S.set.times.kueche} s<br>Tische: ${S.set.tables.join(', ')}</p><button class="btn" data-a="editset">Einstellungen ändern</button><button class="btn ghost" data-a="resetrev">Einnahmen zurücksetzen</button>`;
+  return `<nav>${tabs.map(t=>`<button class="${tab===t[0]?'on':''}" data-a="tab" data-k="${t[0]}">${t[1]}</button>`).join('')}</nav>${b}`}
+
+/* ---------- Formulare ---------- */
+function form(title,fs,v,onSave){
+  v={...v};
+  const f=x=>{const val=v[x.k]??'';
+    if(x.t==='check')return `<label class="ck"><input type="checkbox" data-k="${x.k}" ${val?'checked':''}>${x.l}</label>`;
+    if(x.t==='select')return `<label>${x.l}<select data-k="${x.k}">${x.o.map(o=>`<option value="${esc(o[0])}" ${o[0]==val?'selected':''}>${esc(o[1])}</option>`).join('')}</select></label>`;
+    if(x.t==='area')return `<label>${x.l}<textarea data-k="${x.k}">${esc(val)}</textarea></label>`;
+    if(x.t==='multi')return `<div><b>${x.l}</b>${x.o.map(o=>`<label class="ck"><input type="checkbox" data-m="${x.k}" value="${o[0]}" ${(val||[]).includes(o[0])?'checked':''}>${esc(o[1])}</label>`).join('')}</div>`;
+    if(x.t==='files')return `<label>${x.l}<input type="file" id="fi" multiple accept="image/*"></label><div id="th"></div>`;
+    return `<label>${x.l}<input data-k="${x.k}" type="${x.t||'text'}" ${x.t==='number'?'step="any"':''} value="${esc(val)}"></label>`};
+  $('#modal').innerHTML=`<div class="ov"><div class="pn"><button class="x" data-a="close" aria-label="Schließen">✕</button><h2>${title}</h2>${fs.map(f).join('')}<button class="btn" id="sv">Speichern</button></div></div>`;
+  const th=()=>{const e=$('#th');if(e)e.innerHTML=(v.images||[]).map((u,k)=>`<span class="tn"><img src="${esc(u)}" alt=""><button data-a="rmimg" data-k="${k}">✕</button></span>`).join('')};th();
+  act.rmimg=d=>{v.images.splice(+d.k,1);th()};
+  $('#sv').onclick=async()=>{const b=$('#sv');b.disabled=true;b.textContent='Speichert …';
+    const o={...v};
+    document.querySelectorAll('#modal [data-k]').forEach(e=>{o[e.dataset.k]=e.type==='checkbox'?e.checked:e.type==='number'?parseFloat(String(e.value).replace(',','.'))||0:e.value});
+    const ms={};document.querySelectorAll('#modal [data-m]').forEach(e=>{(ms[e.dataset.m]=ms[e.dataset.m]||[]);if(e.checked)ms[e.dataset.m].push(e.value)});Object.assign(o,ms);
+    try{const fi=$('#fi');if(fi&&fi.files.length){o.images=[...(o.images||[])];for(const fl of fi.files){const r=ref(st,'items/'+Date.now()+'_'+fl.name);await uploadBytes(r,fl);o.images.push(await getDownloadURL(r))}}
+      await onSave(o);act.close()}catch(e){alert('Fehler: '+e.message);b.disabled=false;b.textContent='Speichern'}}}
+
+const catForm=(c={active:true,station:'kueche',order:S.cats.length+1})=>form('Kategorie',[{k:'name',l:'Name'},{k:'station',l:'Geht zu',t:'select',o:[['bar','Bar'],['kueche','Küche']]},{k:'order',l:'Reihenfolge',t:'number'},{k:'active',l:'In der Karte sichtbar',t:'check'}],c,o=>save('categories',c.id,o));
+const itemForm=(i={images:[]})=>form('Artikel',[{k:'name',l:'Name'},{k:'catId',l:'Kategorie',t:'select',o:S.cats.map(c=>[c.id,c.name])},{k:'price',l:'Preis in €',t:'number'},{k:'desc',l:'Beschreibung',t:'area'},{k:'vegan',l:'🌱 vegan',t:'check'},{k:'glutenfrei',l:'🌾 glutenfrei',t:'check'},{k:'vegetarisch',l:'🥕 vegetarisch',t:'check'},{k:'edit',l:'Artikelbearbeitung erlauben',t:'check'},{k:'removable',l:'Zutaten, die man weglassen kann (mit Komma trennen)'},{k:'drink',l:'Eiswürfel und Kohlensäure wählbar (bei erlaubter Bearbeitung)',t:'check'},{k:'img',l:'Bilder (Datei hinzufügen)',t:'files'}],i,o=>{delete o.img;return save('items',i.id,o)});
+const menuForm=(m={itemIds:[]})=>form('Menü',[{k:'name',l:'Name'},{k:'price',l:'Menüpreis in €',t:'number'},{k:'itemIds',l:'Artikel im Menü',t:'multi',o:S.items.map(i=>[i.id,`${i.name} (${eur(i.price)})`])}],m,o=>save('menus',m.id,o));
+const byId=(a,id)=>S[a].find(x=>x.id===id);
+
+/* ---------- Aktionen ---------- */
+const act={
+  close(){$('#modal').innerHTML=''},
+  login(){const r=seg();if($('#pin').value===S.set.pins[r]){sessionStorage.role=r;render()}else toast('PIN falsch')},
+  logout(){sessionStorage.clear();render()},
+  name(d){const v=$('#nm').value.trim();if(!v)return toast('Bitte Namen eingeben');localStorage['g'+seg()]=JSON.stringify({session:d.s,name:v});act.close();render()},
+  gt(d){gtab=d.k;render()},tab(d){tab=d.k;render()},
+  item(d){openItem(d.i)},
+  q(d){const e=$('#q');e.textContent=Math.max(1,+e.textContent+ +d.d)},
+  add(d){const i=byId('items',d.i),q=+$('#q').textContent,nt=[];
+    document.querySelectorAll('#modal [data-r]').forEach(e=>e.checked&&nt.push('ohne '+e.dataset.r));
+    document.querySelectorAll('#modal [data-o]').forEach(e=>nt.push(e.value));
+    cart.push({n:i.name,note:nt.join(', '),price:i.price*q,qty:q,catId:i.catId});act.close();render();toast('Im Warenkorb')},
+  menu(d){const m=byId('menus',d.i);cart.push({n:'Menü '+m.name,price:m.price,qty:1,parts:m.itemIds.map(id=>byId('items',id)).filter(Boolean).map(i=>({n:i.name,catId:i.catId}))});render();toast('Menü im Warenkorb')},
+  cart(){$('#modal').innerHTML=`<div class="ov"><div class="pn"><button class="x" data-a="close" aria-label="Schließen">✕</button><h2>Warenkorb</h2>${cart.map((l,k)=>`<div class="cl"><span>${l.qty}× ${esc(l.n)}<small>${esc(l.note||'')}</small></span><b>${eur(l.price)}</b><button class="x2" data-a="rm" data-k="${k}" title="Entfernen">✕</button></div>`).join('')||'<p>Dein Warenkorb ist leer.</p>'}<p class="tot">Summe ${eur(cart.reduce((a,l)=>a+l.price,0))}</p>${cart.length?'<button class="btn" data-a="order">Bestellen</button>':''}</div></div>`},
+  rm(d){cart.splice(+d.k,1);render();act.cart()},
+  order(){$('#modal').innerHTML=`<div class="ov"><div class="pn"><h2>Kostenpflichtig bestellen?</h2><p class="warn">Diese Bestellung kostet ${eur(cart.reduce((a,l)=>a+l.price,0))}. Sie wird sofort an Bar und Küche weitergegeben.</p><button class="btn" data-a="place">Kostenpflichtig bestellen</button><button class="btn ghost" data-a="cart">Zurück</button></div></div>`},
+  async place(){const n=+seg(),t=S.tables[n],g=JSON.parse(localStorage['g'+n]),by={};
+    cart.forEach(l=>(l.parts||[{n:l.n,catId:l.catId}]).forEach((p,k)=>{const s=stationOf(p.catId);(by[s]=by[s]||[]).push({t:l.parts?`${l.qty}× ${l.n}: ${p.n}`:`${l.qty}× ${l.n}${l.note?' ('+l.note+')':''}`,price:k?0:l.price})}));
+    let all=0;for(const s in by){const total=by[s].reduce((a,l)=>a+l.price,0);all+=total;await addDoc(collection(db,'orders'),{table:n,session:t.session,name:g.name,station:s,lines:by[s],total,status:'bestellt',kind:'order',ts:Date.now()})}
+    await setDoc(doc(db,'settings','main'),{revenue:increment(all)},{merge:true});
+    cart=[];act.close();gtab='orders';render()},
+  async pay(d){const n=+seg(),t=S.tables[n],g=JSON.parse(localStorage['g'+n]);
+    const total=S.orders.filter(o=>o.table===n&&o.session===t.session&&o.kind!=='pay').reduce((a,o)=>a+o.total,0);
+    await addDoc(collection(db,'orders'),{table:n,session:t.session,name:g.name,station:'kellner',kind:'pay',method:d.m,total,status:'bestellt',ts:Date.now()})},
+  invoice(){const n=+seg(),t=S.tables[n],os=S.orders.filter(o=>o.table===n&&o.session===t.session&&o.kind!=='pay');
+    $('#modal').innerHTML=`<div class="ov"><div class="pn"><button class="x" data-a="close" aria-label="Schließen">✕</button><h2>Rechnung · Tisch ${n}</h2>${os.map(o=>`<p><b>${esc(o.name)}</b></p><ul>${o.lines.map(l=>`<li>${esc(l.t)}<i>${eur(l.price)}</i></li>`).join('')}</ul>`).join('')}<p class="tot">Gesamt ${eur(os.reduce((a,o)=>a+o.total,0))}</p><button class="btn" onclick="print()">Drucken</button></div></div>`},
+  st(d){const o=byId('orders',d.o);updateDoc(doc(db,'orders',d.o),d.s==='bearbeitung'?{status:d.s,readyAt:Date.now()+(S.set.times[o.station]||60)*1000}:{status:d.s,readyAt:null})},
+  async paid(d){await updateDoc(doc(db,'orders',d.o),{status:'geliefert'});await setDoc(doc(db,'tables',d.n),{session:uid()})},
+  clean(d){if(confirm('Tisch '+d.n+' leeren?'))setDoc(doc(db,'tables',d.n),{session:uid()})},
+  async rmline(d){const o=byId('orders',d.o),l=o.lines.splice(+d.k,1)[0],total=o.lines.reduce((a,x)=>a+x.price,0);
+    if(o.lines.length)await updateDoc(doc(db,'orders',o.id),{lines:o.lines,total});else await deleteDoc(doc(db,'orders',o.id));
+    await setDoc(doc(db,'settings','main'),{revenue:increment(-l.price)},{merge:true})},
+  newcat(){catForm()},editcat(d){catForm(byId('cats',d.i))},togcat(d){const c=byId('cats',d.i);updateDoc(doc(db,'categories',c.id),{active:c.active===false})},
+  delcat(d){if(confirm('Kategorie löschen?'))deleteDoc(doc(db,'categories',d.i))},
+  newitem(){itemForm()},edititem(d){itemForm(byId('items',d.i))},delitem(d){if(confirm('Artikel löschen?'))deleteDoc(doc(db,'items',d.i))},
+  newmenu(){menuForm()},editmenu(d){menuForm(byId('menus',d.i))},delmenu(d){if(confirm('Menü löschen?'))deleteDoc(doc(db,'menus',d.i))},
+  resetrev(){if(confirm('Einnahmen auf 0 setzen?'))setDoc(doc(db,'settings','main'),{revenue:0},{merge:true})},
+  editset(){const s=S.set;form('Einstellungen',[{k:'name',l:'Name des Restaurants'},{k:'tb',l:'Bearbeitungszeit Bar (Sekunden)',t:'number'},{k:'tk',l:'Bearbeitungszeit Küche (Sekunden)',t:'number'},{k:'tl',l:'Tischnummern (mit Komma trennen)'},{k:'pa',l:'PIN Admin'},{k:'pb',l:'PIN Bar'},{k:'pk',l:'PIN Küche'},{k:'pw',l:'PIN Kellner'}],
+    {name:s.name,tb:s.times.bar,tk:s.times.kueche,tl:s.tables.join(','),pa:s.pins.admin,pb:s.pins.bar,pk:s.pins.kueche,pw:s.pins.kellner},
+    o=>setDoc(doc(db,'settings','main'),{name:o.name,times:{bar:o.tb,kueche:o.tk},tables:o.tl.split(',').map(x=>+x.trim()).filter(Boolean),pins:{admin:o.pa,bar:o.pb,kueche:o.pk,kellner:o.pw}},{merge:true}))}
 };
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const DEFAULT_PW = { adminPassword: "100413", kuechePassword: "kueche123", barPassword: "bar123", kellnerPassword: "kellner123" };
-const pingSound = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
-const successSound = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
-
-const euro = (n) => (Number(n) || 0).toFixed(2).replace(".", ",") + " €";
-const $ = (id) => document.getElementById(id);
-const escapeHtml = (str) => String(str ?? "").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-const escapeAttr = (str) => escapeHtml(str);
-
-window.showScreen = function(id){
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  $(id).classList.add("active");
-};
-
-const activeUnsubs = [];
-function trackUnsub(fn){ activeUnsubs.push(fn); }
-function clearUnsubs(){ while(activeUnsubs.length){ activeUnsubs.pop()(); } }
-
-window.logoutTo = function(id){
-  clearUnsubs();
-  currentTable = null; kundeCart = {}; kellnerSelectedTableId = null;
-  $("staff-revenue-widget").style.display = "none";
-  showScreen(id);
-};
-
-// --- System Config & Umsatz Tracker ---
-let sysConfig = { paypalActive: false, dailyRevenue: 0, dailyTip: 0 };
-let lastTenMark = -1;
-
-onSnapshot(doc(db, "settings", "config"), (snap) => {
-  if(snap.exists()) {
-    sysConfig = snap.data();
-    updateSystemUI();
-  } else {
-    setDoc(doc(db, "settings", "config"), sysConfig);
-  }
-});
-
-function updateSystemUI() {
-  const pToggle = $("admin-paypal-toggle");
-  if(pToggle) pToggle.checked = sysConfig.paypalActive;
-  
-  const pBtnGast = $("pay-method-paypal");
-  if(pBtnGast) pBtnGast.style.display = sysConfig.paypalActive ? "block" : "none";
-  
-  if(!sysConfig.paypalActive && selectedPayMethod === 'paypal') selectPayMethod('bar');
-
-  const currentRev = sysConfig.dailyRevenue || 0;
-  const currentTip = sysConfig.dailyTip || 0;
-  if($("admin-daily-revenue")) $("admin-daily-revenue").textContent = euro(currentRev);
-  if($("admin-daily-tip")) $("admin-daily-tip").textContent = euro(currentTip);
-  if($("staff-revenue-amount")) $("staff-revenue-amount").textContent = euro(currentRev);
-
-  const currentMark = Math.floor(currentRev / 10);
-  if(lastTenMark !== -1 && currentMark > lastTenMark) {
-    const widget = $("staff-revenue-widget");
-    widget.classList.remove("pulse-money-anim");
-    void widget.offsetWidth;
-    widget.classList.add("pulse-money-anim");
-  }
-  
-  if(currentRev === 0) lastTenMark = 0;
-  else if(lastTenMark === -1) lastTenMark = currentMark;
-  else lastTenMark = currentMark;
-}
-
-window.togglePayPal = async function(checked) { await setDoc(doc(db, "settings", "config"), { paypalActive: checked }, { merge: true }); };
-
-window.resetRevenue = async function() {
-  if(!confirm("Möchtest du den Tagesumsatz und die Trinkgeld-Kasse wirklich auf 0 setzen?")) return;
-  await setDoc(doc(db, "settings", "config"), { dailyRevenue: 0, dailyTip: 0 }, { merge: true });
-};
-
-// --- Login ---
-async function getRolePasswords(){
-  try { const snap = await getDoc(doc(db, "settings", "roles")); if (snap.exists()) return { ...DEFAULT_PW, ...snap.data() }; } catch (e) {}
-  return DEFAULT_PW;
-}
-
-window.roleLogin = async function(role){
-  const pwMap = { admin: "admin-pw-input", kueche: "kueche-pw-input", bar: "bar-pw-input", kellner: "kellner-pw-input" };
-  const targetMap = { admin: "screen-admin-panel", kueche: "screen-kueche-panel", bar: "screen-bar-panel", kellner: "screen-kellner-panel" };
-  const pwFieldKey = { admin: "adminPassword", kueche: "kuechePassword", bar: "barPassword", kellner: "kellnerPassword" };
-  const entered = $(pwMap[role]).value;
-  try{
-    const pw = await getRolePasswords();
-    if (entered === pw[pwFieldKey[role]]){
-      $(pwMap[role]).value = "";
-      if (role === "admin") enterAdmin();
-      if (role === "kueche") { enterStaff('kueche'); $("staff-revenue-widget").style.display = "block"; }
-      if (role === "bar") { enterStaff('bar'); $("staff-revenue-widget").style.display = "block"; }
-      if (role === "kellner"){ if ("Notification" in window) Notification.requestPermission(); enterKellner(); $("staff-revenue-widget").style.display = "block"; }
-      showScreen(targetMap[role]);
-    } else { alert("Falsches Passwort"); }
-  }catch(e){ alert("Netzwerkfehler"); }
-};
-
-window.adminSavePasswords = async function(){
-  try {
-    const next = { 
-      adminPassword: $("pw-admin").value || "100413", 
-      kuechePassword: $("pw-kueche").value || "kueche123", 
-      barPassword: $("pw-bar").value || "bar123", 
-      kellnerPassword: $("pw-kellner").value || "kellner123" 
-    };
-    await setDoc(doc(db, "settings", "roles"), next, { merge: true });
-    $("pw-save-msg").textContent = "Gespeichert!";
-    setTimeout(() => $("pw-save-msg").textContent = "", 3000);
-  } catch (e) { $("pw-save-msg").textContent = "Datenbank-Fehler."; }
-};
-
-// --- Cache ---
-let categoriesCache = []; let itemsCache = []; let tablesCache = [];
-function listenCategories(cb){ trackUnsub(onSnapshot(query(collection(db, "categories"), orderBy("name")), snap => { categoriesCache = snap.docs.map(d => ({ id: d.id, ...d.data() })); cb && cb(); })); }
-function listenItems(cb){ trackUnsub(onSnapshot(collection(db, "items"), snap => { itemsCache = snap.docs.map(d => ({ id: d.id, ...d.data() })); cb && cb(); })); }
-function listenTables(cb){ trackUnsub(onSnapshot(query(collection(db, "tables"), orderBy("number")), snap => { tablesCache = snap.docs.map(d => ({ id: d.id, ...d.data() })); cb && cb(); })); }
-
-// ================= KUNDE =================
-let currentTable = null; let kundeCart = {};
-let selectedPayMethod = 'bar'; let selectedTip = 0;
-
-window.kundeLogin = async function(){
-  const val = $("kunde-tisch-input").value.trim();
-  if (!val) return;
-  const snap = await getDocs(query(collection(db, "tables"), where("number", "==", val)));
-  if (snap.empty){ $("kunde-login-error").textContent = "Tisch existiert nicht."; return; }
-  currentTable = { id: snap.docs[0].id, ...snap.docs[0].data() };
-  $("kunde-tisch-title").textContent = "Tisch " + currentTable.number;
-  $("kunde-login-error").textContent = "";
-  enterKundeMenu(); showScreen("screen-kunde-menu");
-};
-
-function enterKundeMenu(){
-  listenCategories(() => renderMenuInto($("kunde-menu-container")));
-  listenItems(() => renderMenuInto($("kunde-menu-container")));
-  
-  trackUnsub(onSnapshot(query(collection(db, "orders"), where("tableId", "==", currentTable.id)), snap => {
-    let total = 0; $("kunde-orders-container").innerHTML = "";
-    snap.docs.map(d=>d.data()).filter(o => o.status !== 'bezahlt').forEach(o => {
-      total += (o.price * o.qty);
-      const noteHtml = o.note ? `<div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Wunsch: ${escapeHtml(o.note)}</div>` : "";
-      $("kunde-orders-container").innerHTML += `<div class="list-row"><div class="left"><div><strong style="color:var(--text-main);">${escapeHtml(o.itemName)}</strong> ×${o.qty}${noteHtml}</div><span class="badge ${o.status}">${o.status}</span></div><div style="font-weight:600;">${euro(o.price*o.qty)}</div></div>`;
-    });
-    $("kunde-orders-total").textContent = euro(total);
-  }));
-}
-
-window.addToCart = function(itemId) {
-  const item = itemsCache.find(i => i.id === itemId);
-  if(!item || item.soldOut) return;
-  kundeCart[item.id] = kundeCart[item.id] || { item: item, qty: 0, note: "" };
-  kundeCart[item.id].qty++;
-  updateKundeCartBar();
-};
-
-window.updateCartNote = function(itemId, val) {
-  if(kundeCart[itemId]) kundeCart[itemId].note = val;
-};
-
-function updateKundeCartBar(){
-  const entries = Object.values(kundeCart);
-  $("kunde-cart-trigger").style.display = entries.length ? "flex" : "none";
-  $("kunde-cart-summary").textContent = entries.reduce((s,e)=>s+e.qty,0) + " Artikel";
-  $("kunde-cart-total").textContent = euro(entries.reduce((s,e)=>s+(e.qty*e.item.price),0));
-}
-
-window.openCartModal = function() {
-  const entries = Object.values(kundeCart);
-  let html = "";
-  let total = 0;
-  
-  entries.forEach(e => {
-    total += (e.item.price * e.qty);
-    html += `<div style="display:flex; flex-direction:column; gap:10px; background:var(--bg-main); padding:16px; border-radius:12px; border:var(--border); margin-bottom:12px;">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div style="font-weight:500; font-size:16px;">${escapeHtml(e.item.name)} <span style="color:var(--accent);">x${e.qty}</span></div>
-        <div style="font-weight:600; color:var(--success);">${euro(e.item.price * e.qty)}</div>
-      </div>
-      <input type="text" placeholder="Sonderwunsch (z.B. Eiswürfel, ohne Zwiebeln...)" value="${escapeAttr(e.note)}" oninput="updateCartNote('${e.item.id}', this.value)">
-    </div>`;
-  });
-  
-  $("cart-items-list").innerHTML = html;
-  $("cart-modal-total").textContent = euro(total);
-  $("modal-cart").classList.add("active");
-};
-
-window.closeCartModal = function() { $("modal-cart").classList.remove("active"); };
-
-window.kundePlaceOrder = async function(){
-  const entries = Object.values(kundeCart);
-  if(entries.length === 0) return;
-  
-  let orderTotal = 0;
-
-  for (const e of entries){
-    // Routing prüfen: Gehört der Artikel zur Bar oder Küche?
-    const cat = categoriesCache.find(c => c.id === e.item.categoryId);
-    const target = (cat && cat.target === 'bar') ? 'bar' : 'kueche';
-    const itemTotal = Number(e.item.price) * e.qty;
-    orderTotal += itemTotal;
-    
-    await addDoc(collection(db, "orders"), { 
-      tableId: currentTable.id, 
-      tableNumber: currentTable.number, 
-      itemId: e.item.id, 
-      itemName: e.item.name, 
-      price: Number(e.item.price), 
-      qty: e.qty, 
-      note: e.note || "",
-      status: target, 
-      createdAt: serverTimestamp() 
-    });
-  }
-  
-  // Umsatz sofort buchen!
-  await setDoc(doc(db, "settings", "config"), { dailyRevenue: (sysConfig.dailyRevenue || 0) + orderTotal }, { merge: true });
-
-  kundeCart = {}; 
-  updateKundeCartBar();
-  closeCartModal();
-  kundeTab("bestellungen");
-};
-
-window.kundeTab = function(name){
-  document.querySelectorAll("#screen-kunde-menu .tab-btn").forEach(b => b.classList.toggle("active", b.dataset.ktab === name));
-  document.querySelectorAll("#screen-kunde-menu .tab-panel").forEach(p => p.classList.remove("active"));
-  $("kunde-tab-" + name).classList.add("active");
-};
-
-window.callWaiterSimple = async function(){ await updateDoc(doc(db, "tables", currentTable.id), { callStatus: "hilfe_gerufen", tip: null }); alert("Kellner wurde gerufen!"); };
-
-window.openPayModal = function(){ $("modal-pay").classList.add("active"); };
-window.closePayModal = function(){ $("modal-pay").classList.remove("active"); };
-window.selectPayMethod = function(m){ selectedPayMethod = m; $("pay-method-bar").classList.toggle("active", m === 'bar'); $("pay-method-paypal").classList.toggle("active", m === 'paypal'); };
-window.selectTip = function(val){ selectedTip = val; document.querySelectorAll(".tip-grid .tip-btn").forEach(b => b.classList.toggle("active", parseInt(b.dataset.tip) === val)); };
-
-window.submitPaymentRequest = async function(){ await updateDoc(doc(db, "tables", currentTable.id), { callStatus: "pay_" + selectedPayMethod, tip: selectedTip }); closePayModal(); alert("Kellner kommt zum Kassieren!"); };
-
-
-// ================= ADMIN =================
-function enterAdmin(){
-  trackUnsub(onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc"), limit(20)), snap => {
-    let html = "";
-    snap.docs.forEach(d => {
-      const o = d.data();
-      const time = o.createdAt ? new Date(o.createdAt.toMillis()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "";
-      html += `<div class="list-row">
-        <div><span class="eyebrow" style="margin-right:10px;">${time}</span> <strong style="color:var(--text-main);">Tisch ${o.tableNumber}</strong>: ${escapeHtml(o.itemName)} (x${o.qty})</div>
-        <div class="badge">${o.status}</div>
-      </div>`;
-    });
-    $("admin-activity-log").innerHTML = html || `<div style="color:var(--text-muted); text-align:center;">Keine Aktivitäten heute.</div>`;
-  }));
-
-  listenTables(()=>{ $("admin-tables-list").innerHTML = tablesCache.map(t=>`<div class="list-row"><div class="left"><strong style="color:var(--text-main);">Tisch ${t.number}</strong></div><button class="btn small rust" onclick="adminDeleteTable('${t.id}')">Löschen</button></div>`).join(""); });
-  
-  listenCategories(()=>{ 
-    $("admin-categories-list").innerHTML = categoriesCache.map(c=>`
-      <div class="list-row">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <strong style="font-size:16px; color:var(--text-main);">${escapeHtml(c.name)}</strong>
-          <span class="badge" style="background:${c.target === 'bar' ? 'var(--bar-color)' : 'var(--accent)'}; color:#fff; border:none;">${c.target || 'kueche'}</span>
-          <label class="switch"><input type="checkbox" ${c.active !== false ? "checked" : ""} onchange="adminToggleCategory('${c.id}', this.checked)"><span class="slider"></span></label>
-        </div>
-        <div style="display:flex; gap:8px;">
-          <button class="btn small ghost" onclick="adminEditCategoryPrompt('${c.id}', '${escapeAttr(c.name)}')">Umbenennen</button>
-          <button class="btn small rust" onclick="adminDeleteCategory('${c.id}')">Löschen</button>
-        </div>
-      </div>`).join(""); 
-    $("admin-item-category").innerHTML = categoriesCache.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join(""); 
-  });
-  
-  listenItems(()=>{ 
-    $("admin-items-list").innerHTML = itemsCache.map(i=>`
-      <div class="item-card" style="padding: 16px;">
-        <h3 style="margin-bottom:4px; font-size:18px;">${escapeHtml(i.name)}</h3>
-        <div style="color:var(--success); font-weight:600; font-size:18px; margin-bottom:12px;">${euro(i.price)}</div>
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; border-top:var(--border); padding-top:12px;">
-          <label style="font-size:13px; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:6px;">
-            <input type="checkbox" ${i.soldOut ? "checked" : ""} onchange="adminToggleSoldOut('${i.id}', this.checked)" style="width:16px; height:16px; accent-color:var(--danger);"> Ausverkauft
-          </label>
-          <div style="display:flex; gap:6px;">
-            <button class="btn small ghost" onclick="adminEditItemPrompt('${i.id}')">Ändern</button>
-            <button class="btn small rust" onclick="adminDeleteItem('${i.id}')">Löschen</button>
-          </div>
-        </div>
-      </div>`).join(""); 
-  });
-}
-
-window.adminToggleCategory = async (id, state) => await updateDoc(doc(db, "categories", id), { active: state });
-window.adminToggleSoldOut = async (id, state) => await updateDoc(doc(db, "items", id), { soldOut: state });
-window.adminAddTable = async function(ev){ ev.preventDefault(); await addDoc(collection(db, "tables"), { number: $("admin-new-table").value, status: "frei", callStatus: null }); $("admin-new-table").value = ""; return false; };
-window.adminDeleteTable = async function(id){ if(confirm("Tisch löschen?")) await deleteDoc(doc(db, "tables", id)); };
-
-window.adminAddCategory = async function(ev){ ev.preventDefault(); await addDoc(collection(db, "categories"), { name: $("admin-new-category").value, target: $("admin-cat-target").value, active: true }); $("admin-new-category").value = ""; return false; };
-window.adminEditCategoryPrompt = async function(id, curName){ const name = prompt("Neue Kategoriebezeichnung:", curName); if(name) await updateDoc(doc(db, "categories", id), { name }); };
-window.adminDeleteCategory = async function(id){ if(confirm("Kategorie löschen?")) await deleteDoc(doc(db, "categories", id)); };
-
-window.adminAddItem = async function(ev){ 
-  ev.preventDefault(); 
-  const badges = [];
-  if($("badge-vegan").checked) badges.push("Vegan");
-  if($("badge-spicy").checked) badges.push("Scharf");
-
-  await addDoc(collection(db, "items"), { 
-    name: $("admin-item-name").value, 
-    description: $("admin-item-desc").value, 
-    imageUrl: $("admin-item-image").value, 
-    price: parseFloat($("admin-item-price").value), 
-    categoryId: $("admin-item-category").value,
-    badges: badges, soldOut: false
-  }); 
-  $("admin-item-name").value = ""; $("admin-item-desc").value = ""; $("admin-item-image").value = ""; $("admin-item-price").value = "";
-  $("badge-vegan").checked = false; $("badge-spicy").checked = false;
-  return false; 
-};
-
-window.adminDeleteItem = async function(id){ if(confirm("Artikel löschen?")) await deleteDoc(doc(db, "items", id)); };
-window.adminEditItemPrompt = async function(id){
-  const item = itemsCache.find(i => i.id === id);
-  if(!item) return;
-  const newName = prompt("Name:", item.name);
-  if(newName === null) return;
-  const newPrice = prompt("Preis (€):", item.price);
-  if(newPrice === null) return;
-  await updateDoc(doc(db, "items", id), { name: newName, price: parseFloat(newPrice) || item.price });
-};
-window.adminTab = function(name){ document.querySelectorAll("#screen-admin-panel .tab-btn").forEach(b=>b.classList.toggle("active", b.dataset.atab===name)); document.querySelectorAll("#screen-admin-panel .tab-panel").forEach(p=>p.classList.remove("active")); $("admin-tab-"+name).classList.add("active"); };
-
-// ================= KÜCHE & BAR =================
-let prevStaffCount = { kueche: 0, bar: 0 };
-
-function enterStaff(station){
-  const container = $(`${station}-orders-container`);
-  const ticketClass = station === 'bar' ? 'bar-ticket' : 'kueche-ticket';
-  
-  trackUnsub(onSnapshot(query(collection(db, "orders"), where("status", "==", station)), snap => {
-    if(snap.docs.length > prevStaffCount[station] && prevStaffCount[station] !== 0) successSound.play().catch(e=>{});
-    prevStaffCount[station] = snap.docs.length;
-
-    container.innerHTML = `<div class="ticket-grid">` + snap.docs.map(d=>{
-      const o = d.data();
-      const time = o.createdAt ? new Date(o.createdAt.toMillis()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "";
-      const noteBox = o.note ? `<div style="background:var(--bg-main); padding:10px; border-radius:8px; margin-top:10px; font-size:14px; color:var(--text-main); font-weight:500; border:1px solid var(--accent);">Wunsch: ${escapeHtml(o.note)}</div>` : "";
-      return `<div class="ticket ${ticketClass}">
-        <div class="tk-meta">Bestellung ${time}</div>
-        <div class="tk-table">Tisch ${o.tableNumber}</div>
-        <div class="tk-item">${escapeHtml(o.itemName)} <strong style="color:var(--accent);">×${o.qty}</strong></div>
-        ${noteBox}
-        <button class="btn primary" style="width:100%; margin-top:16px; padding: 14px;" onclick="updateOrder('${d.id}','fertig')">Fertig zur Abholung</button>
-      </div>`;
-    }).join("") + `</div>`;
-  }));
-}
-window.updateOrder = async function(id, st){ await updateDoc(doc(db, "orders", id), {status:st}); };
-
-// ================= KELLNER =================
-let kellnerSelectedTableId = null;
-let previousCallStates = {}; 
-
-function enterKellner(){
-  trackUnsub(onSnapshot(query(collection(db, "orders"), where("status", "==", "fertig")), snap => {
-    $("kellner-fertig-container").innerHTML = `<div class="ticket-grid">` + snap.docs.map(d=>{
-      const o = d.data(); return `<div class="ticket kueche-ticket"><div class="tk-table">Tisch ${o.tableNumber}</div><div class="tk-item">${escapeHtml(o.itemName)} ×${o.qty}</div><button class="btn success" style="width:100%; margin-top:16px; padding: 14px;" onclick="updateOrder('${d.id}','serviert')">Serviert</button></div>`;
-    }).join("") + `</div>`;
-  }));
-  
-  listenTables(() => {
-    const c = $("kellner-tables-container"); c.innerHTML = "";
-    tablesCache.forEach(t => {
-      if(t.callStatus && previousCallStates[t.id] !== t.callStatus) {
-        pingSound.play().catch(e=>{});
-        if("Notification" in window && Notification.permission === "granted") new Notification("Tisch " + t.number + " benötigt Aufmerksamkeit!");
-      }
-      previousCallStates[t.id] = t.callStatus;
-
-      const card = document.createElement("div");
-      let subText = "Alles ruhig"; let icon = "✅";
-      if(t.callStatus === "hilfe_gerufen") { subText = "Gast braucht Hilfe"; icon = "⚠️"; }
-      if(t.callStatus === "pay_bar") { subText = "Möchte zahlen (Bar)"; icon = "💶"; }
-      if(t.callStatus === "pay_paypal") { subText = "Möchte zahlen (PayPal)"; icon = "📱"; }
-
-      card.className = "role-card " + (t.callStatus ? "blink-alert" : "");
-      card.innerHTML = `<h3>Tisch ${t.number}</h3><div style="text-align:center; margin-top:12px; color:var(--text-muted); font-size:13px; font-weight:500; display:flex; align-items:center; justify-content:center; gap:6px;">${icon} ${subText}</div>`;
-      card.onclick = () => openKellnerTableDetails(t);
-      c.appendChild(card);
-    });
-  });
-}
-window.kellnerTab = function(name){ document.querySelectorAll("#screen-kellner-panel .tab-btn").forEach(b=>b.classList.toggle("active", b.dataset.wtab===name)); document.querySelectorAll("#screen-kellner-panel .tab-panel").forEach(p=>p.classList.remove("active")); $("kellner-tab-"+name).classList.add("active"); };
-
-window.openKellnerTableDetails = async function(table){
-  kellnerSelectedTableId = table.id;
-  $("kt-title").textContent = "Tisch " + table.number;
-  
-  if(table.callStatus){
-    $("kt-alert-box").style.display = "block";
-    let msg = table.callStatus === "hilfe_gerufen" ? "Gast braucht Hilfe am Tisch!" : `Gast möchte zahlen (${table.callStatus === 'pay_bar' ? 'Bar' : 'PayPal'})!`;
-    if(table.tip) msg += ` + ${table.tip}% Trinkgeld hinterlegt`;
-    $("kt-alert-text").textContent = msg;
-  } else {
-    $("kt-alert-box").style.display = "none";
-  }
-
-  const snap = await getDocs(query(collection(db, "orders"), where("tableId", "==", table.id)));
-  let subtotal = 0; $("kt-orders-list").innerHTML = "";
-  snap.docs.forEach(d => {
-    const o = d.data();
-    if(o.status === 'bezahlt') return;
-    subtotal += (o.price * o.qty);
-    const canCancel = o.status === 'kueche' || o.status === 'bar'; 
-    const noteStr = o.note ? `<div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Wunsch: ${escapeHtml(o.note)}</div>` : "";
-    
-    $("kt-orders-list").innerHTML += `<div class="list-row" style="padding:16px; margin-bottom:8px;"><div class="left"><div><strong style="color:var(--text-main);">${escapeHtml(o.itemName)}</strong> ×${o.qty} <span class="badge">${o.status}</span>${noteStr}</div></div><div style="display:flex; align-items:center; gap:16px;"><span style="color:var(--success); font-weight:600;">${euro(o.price*o.qty)}</span>${canCancel ? `<button class="btn small rust" onclick="cancelOrder('${d.id}')">Storno</button>` : ""}</div></div>`;
-  });
-  
-  let total = subtotal;
-  let tipAmount = 0;
-  if(table.tip) {
-    tipAmount = subtotal * (table.tip / 100);
-    total = subtotal + tipAmount;
-  }
-  
-  $("kt-total-sum").dataset.tipAmount = tipAmount;
-  $("kt-total-sum").textContent = euro(total) + (table.tip ? ` (inkl. ${euro(tipAmount)} Tipp)` : "");
-  $("modal-kellner-table").classList.add("active");
-};
-
-// STORNO: Löscht Order UND zieht den Umsatz vom Tagesumsatz wieder ab!
-window.cancelOrder = async function(orderId) {
-  if(!confirm("Diesen Artikel stornieren? Der Umsatz wird sofort wieder vom Tagesumsatz abgezogen.")) return;
-  const orderRef = doc(db, "orders", orderId);
-  const snap = await getDoc(orderRef);
-  if(snap.exists()) {
-    const o = snap.data();
-    const itemTotal = o.price * o.qty;
-    // Umsatz abziehen (nicht unter 0 fallen lassen)
-    await setDoc(doc(db, "settings", "config"), { dailyRevenue: Math.max(0, (sysConfig.dailyRevenue || 0) - itemTotal) }, { merge: true });
-    // Order löschen
-    await deleteDoc(orderRef);
-  }
-  alert("Artikel wurde storniert.");
-  closeKellnerModal();
-};
-
-window.closeKellnerModal = function(){ $("modal-kellner-table").classList.remove("active"); kellnerSelectedTableId = null; };
-window.clearTableCall = async function(){ if(!kellnerSelectedTableId) return; await updateDoc(doc(db, "tables", kellnerSelectedTableId), { callStatus: null, tip: null }); $("kt-alert-box").style.display = "none"; };
-
-window.markTablePaid = async function(){
-  if(!confirm("Rechnung beglichen? Tisch wird geleert.")) return;
-  const tipAmount = parseFloat($("kt-total-sum").dataset.tipAmount || 0);
-
-  const snap = await getDocs(query(collection(db, "orders"), where("tableId", "==", kellnerSelectedTableId)));
-  snap.forEach(async (d) => { if(d.data().status !== 'bezahlt') await updateDoc(doc(db, "orders", d.id), { status: 'bezahlt' }); });
-
-  await updateDoc(doc(db, "tables", kellnerSelectedTableId), { callStatus: null, tip: null, status: "frei" });
-  
-  if(tipAmount > 0) {
-    await setDoc(doc(db, "settings", "config"), { dailyTip: (sysConfig.dailyTip || 0) + tipAmount }, { merge: true });
-  }
-
-  closeKellnerModal();
-};
-
-function renderMenuInto(container){
-  const activeCats = categoriesCache.filter(c => c.active !== false);
-  
-  container.innerHTML = activeCats.map(cat => {
-    const items = itemsCache.filter(i => i.categoryId === cat.id);
-    if (!items.length) return "";
-    return `<div class="category-block" style="margin-bottom:40px;"><div class="category-title"><h2 style="margin:0;">${escapeHtml(cat.name)}</h2></div><div class="item-grid">` + items.map(item => {
-      const badgesHtml = (item.badges || []).map(b => `<span class="badge-tag">${b}</span>`).join("");
-      const soldOutClass = item.soldOut ? "sold-out" : "";
-      const soldOutBadge = item.soldOut ? `<div class="sold-out-badge">Ausverkauft</div>` : "";
-      
-      return `<div class="item-card ${soldOutClass}">
-        ${soldOutBadge}
-        ${item.imageUrl ? `<img src="${escapeAttr(item.imageUrl)}" alt="${escapeAttr(item.name)}" onerror="this.style.display='none'">` : ""}
-        <div class="body">
-          <h3>${escapeHtml(item.name)}</h3>
-          ${badgesHtml ? `<div class="badges-row">${badgesHtml}</div>` : ""}
-          <div class="desc">${escapeHtml(item.description || "")}</div>
-          <div class="row">
-            <div class="price">${euro(item.price)}</div>
-            ${item.soldOut ? `<span style="color:var(--danger); font-size:12px; font-weight:600;">Leer</span>` : `<button class="btn primary small" onclick="addToCart('${item.id}')">+ Hinzufügen</button>`}
-          </div>
-        </div>
-      </div>`;
-    }).join("") + `</div></div>`;
-  }).join("");
-  
-  if(!container.innerHTML) container.innerHTML = `<div style="text-align:center; padding: 40px; color:var(--text-muted);">Aktuell keine Speisen verfügbar.</div>`;
-}
-</script>
-
-<!-- JotForm AI Agent -->
-<script src='https://cdn.jotfor.ms/agent/embedjs/01a068263ab8700087389361f1662582933c/embed.js'></script>
-
-</body>
-</html>
+document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(el&&act[el.dataset.a])act[el.dataset.a](el.dataset)});
+function tick(){document.querySelectorAll('.cd').forEach(e=>{const s=Math.round((e.dataset.u-Date.now())/1000);e.textContent=s>0?`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`:'gleich fertig'})}
+setInterval(tick,1000);
+</script></body></html>
