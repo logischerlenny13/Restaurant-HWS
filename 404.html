@@ -61,10 +61,39 @@ nav button{flex:1;min-height:46px}.row2{padding:.8rem 0;min-height:64px}.row2 im
 .cartbtn{left:.8rem;right:.8rem;transform:none;bottom:calc(.8rem + env(safe-area-inset-bottom));padding:1rem;font-size:1.05rem}
 .btn{min-height:48px}.sm{min-height:0}.pn{max-height:94vh;padding-bottom:calc(1.4rem + env(safe-area-inset-bottom))}.x{width:2.6rem;height:2.6rem}.narrow{margin-top:2rem}}
 @media(prefers-reduced-motion:reduce){.bell.w,.cp{animation:none}}
-@media print{#app,#rev,.x,.btn{display:none}.ov{position:static;background:none}.pn{max-height:none}}
+#lights{position:fixed;top:0;left:0;right:0;height:40px;pointer-events:none;z-index:8;display:none;overflow:hidden}
+#snow{position:fixed;inset:0;pointer-events:none;z-index:7;display:none}
+body.xmas #lights,body.xmas #snow{display:block}
+.bulb{fill:currentColor;animation:tw 2.4s infinite}.bulb ellipse{filter:drop-shadow(0 0 6px currentColor)}
+.c0{color:#e23b3b}.c1{color:#f2b632}.c2{color:#3fae5a}.c3{color:#fff1c2}
+@keyframes tw{0%,100%{opacity:1}50%{opacity:.35}}
+body.xmas{--acc:#1f4d36;--warn:#a3262a;--gold:#b8963e;background:radial-gradient(circle at 50% 0,#2a4b3b,#16281f 70%) fixed}
+body.xmas .paper{margin-top:3.4rem;border-top:3px double var(--gold)}
+body.xmas h1::before{content:'🎄 '}
+body.xmas h2{border-bottom-color:var(--gold)}
+body.xmas .dots{border-bottom-color:var(--gold)}
+body.xmas nav .on,body.xmas .btn,body.xmas .cartbtn{background:linear-gradient(var(--acc),#173a29)}
+body.xmas .btn.ghost{background:none}
+.greet{margin:.4rem 0 0;text-align:center;font-family:'Cormorant Garamond',serif;font-size:1.25rem;color:var(--warn)}
+@media(max-width:600px){body.xmas{background:var(--paper)}body.xmas .paper{margin-top:0;padding-top:3.2rem}}
+@media(prefers-reduced-motion:reduce){.bulb{animation:none}}
+.paper{position:relative}
+.cn{position:absolute;display:none;font-style:normal;font-size:1.8rem;line-height:1;pointer-events:none}
+body.xmas .cn{display:block}
+.cn.a{top:-.8rem;left:-.6rem;transform:rotate(-25deg)}.cn.a:before{content:'🌲'}
+.cn.b{top:-.8rem;right:-.6rem}.cn.b:before{content:'⭐'}
+.cn.c{bottom:-.8rem;left:-.6rem}.cn.c:before{content:'❄️'}
+.cn.d{bottom:-.8rem;right:-.6rem;transform:rotate(20deg)}.cn.d:before{content:'🎄'}
+.banner{margin:1.6rem 0 0;padding:.9rem 1rem;border:2px solid #b8963e;border-radius:2px;background:repeating-linear-gradient(135deg,#1f4d36 0 14px,#245a40 14px 28px);color:#fff;text-align:center;box-shadow:inset 0 0 0 3px #173a29,inset 0 0 0 4px #b8963e88}
+body.xmas .banner h2{margin:0;border:0;color:#f6e7b4;font-size:1.7rem}.banner small{display:block;opacity:.9}
+.mbox{border:1px solid #b8963e;border-top:0;padding:.2rem 1rem;background:#fffdf5}
+#mus{position:fixed;top:3rem;right:.8rem;width:2.8rem;height:2.8rem;border-radius:50%;border:1px solid #b8963e;background:var(--paper);font-size:1.2rem;z-index:24;display:none;cursor:pointer;box-shadow:0 2px 8px #0003}
+body.xmas #mus{display:block}
+@media(max-width:600px){.cn.a,.cn.b{display:none!important}.cn.c{left:.3rem;bottom:.3rem}.cn.d{right:.3rem;bottom:.3rem}}
+@media print{#lights,#snow{display:none!important}#app,#rev,.x,.btn{display:none}.ov{position:static;background:none}.pn{max-height:none}}
 @media(prefers-reduced-motion:reduce){.fl{animation-duration:.01s}}
 </style></head><body>
-<div id="app"></div><div id="rev"></div><div id="modal"></div><div id="toast"></div><div id="chat"></div>
+<div id="app"></div><div id="rev"></div><div id="modal"></div><div id="toast"></div><div id="chat"></div><div id="lights"></div><canvas id="snow"></canvas><button id="mus" aria-label="Weihnachtsmusik" aria-pressed="false">🎵</button>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getFirestore,collection,doc,onSnapshot,addDoc,setDoc,updateDoc,deleteDoc,increment} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -85,7 +114,7 @@ const eur=n=>(Math.round(n*100)/100).toFixed(2).replace('.',',')+' €';
 const uid=()=>Math.random().toString(36).slice(2,10);
 const ROLES=['admin','bar','kueche','kellner'],ROLEN={admin:'Admin',bar:'Bar',kueche:'Küche',kellner:'Kellner'};
 const ST={bestellt:'Bestellt',bearbeitung:'Bearbeitet',fertig:'Wird zu dir gebracht',geliefert:'Wurde geliefert'};
-const D={name:'Restaurant',tables:[1,2,3,4,5,6],times:{bar:30,kueche:300},pins:{admin:'0000',bar:'1111',kueche:'2222',kellner:'3333'},revenue:0};
+const D={xmas:true,name:'Restaurant',tables:[1,2,3,4,5,6],times:{bar:30,kueche:300},pins:{admin:'0000',bar:'1111',kueche:'2222',kellner:'3333'},revenue:0};
 const S={cats:[],items:[],menus:[],orders:[],tables:{},set:D};
 let tab='cats',gtab='karte',cart=[],lastRev=null,chatMsgs=[],chatOpen=false;const ready={},pend={};
 const seg=()=>{let s=decodeURIComponent(location.hash.slice(1)||location.pathname.split('/').filter(Boolean).pop()||'').toLowerCase();return s==='index.html'?'':s};
@@ -98,6 +127,7 @@ const col=(n,k)=>onSnapshot(collection(db,n),s=>{S[k]=s.docs.map(d=>({id:d.id,..
 col('categories','cats');col('items','items');col('menus','menus');col('orders','orders');
 onSnapshot(collection(db,'tables'),s=>{S.tables={};s.docs.forEach(d=>S.tables[d.id]=d.data());ready.tables=true;render()});
 onSnapshot(doc(db,'settings','main'),s=>{const d=s.data()||{};S.set={...D,...d,times:{...D.times,...d.times},pins:{...D.pins,...d.pins}};
+  document.body.classList.toggle('xmas',S.set.xmas!==false);
   const rv=S.set.revenue||0;
   if(lastRev!==null&&rv>lastRev&&['admin','kellner'].includes(sessionStorage.role)){const f=document.createElement('div');f.className='fl';f.textContent='+ '+eur(rv-lastRev);document.body.append(f);setTimeout(()=>f.remove(),1700)}
   lastRev=rv;render()});
@@ -114,7 +144,8 @@ function renderChat(){
   $('#bd').textContent=un||'';$('.bell').classList.toggle('w',un>0);
   if(chatOpen){const cm=$('#cm');cm.innerHTML=chatMsgs.map(m=>`<div class="m ${m.from===r?'me':''}"><small>${ROLEN[m.from]||''}</small>${esc(m.text)}</div>`).join('');cm.scrollTop=cm.scrollHeight}}
 
-function render(){render0();renderChat()}
+function decorate(){document.querySelectorAll('.paper').forEach(p=>{if(!p.querySelector('.cn'))p.insertAdjacentHTML('beforeend','<i class="cn a"></i><i class="cn b"></i><i class="cn c"></i><i class="cn d"></i>')})}
+function render(){render0();decorate();renderChat()}
 function render0(){const r=seg();
   if(ROLES.includes(r))return sessionStorage.role===r?staff(r):login(r);
   $('#rev').innerHTML='';
@@ -133,7 +164,7 @@ function karte(){
   const row=i=>`<div class="row2" data-a="item" data-i="${i.id}">${i.images?.[0]?`<img src="${esc(i.images[0])}" alt="">`:''}<span class="nm">${esc(i.name)} ${badges(i)}</span><span class="dots"></span><b>${eur(i.price)}</b></div>`;
   const menus=S.menus.map(m=>{const its=m.itemIds.map(id=>S.items.find(x=>x.id===id)).filter(Boolean);const sv=its.reduce((a,x)=>a+x.price,0)-m.price;
     return `<div class="row2" data-a="menu" data-i="${m.id}"><span class="nm">${esc(m.name)}<small>${its.map(x=>esc(x.name)).join(', ')}</small></span><span class="dots"></span><b>${eur(m.price)}</b>${sv>0?`<em>Du sparst ${eur(sv)}</em>`:''}</div>`}).join('');
-  return (menus?`<h2>Menüs</h2>${menus}`:'')+cats.map(c=>{const its=S.items.filter(i=>i.catId===c.id);return its.length?`<h2>${esc(c.name)}</h2>${its.map(row).join('')}`:''}).join('')||'<p>Die Karte ist gerade leer.</p>'}
+  return (menus?(S.set.xmas!==false?'<div class="banner"><h2>🎁 Weihnachtsmenüs 🎁</h2><small>Festlich zusammengestellt – günstiger als einzeln bestellt</small></div><div class="mbox">'+menus+'</div>':'<h2>Menüs</h2>'+menus):'')+cats.map(c=>{const its=S.items.filter(i=>i.catId===c.id);return its.length?`<h2>${esc(c.name)}</h2>${its.map(row).join('')}`:''}).join('')||'<p>Die Karte ist gerade leer.</p>'}
 
 function guest(n){
   const t=S.tables[n];
@@ -143,7 +174,7 @@ function guest(n){
   const mine=S.orders.filter(o=>o.table===n&&o.session===t.session);
   const ords=mine.filter(o=>o.kind!=='pay'),pay=mine.find(o=>o.kind==='pay'&&o.status!=='geliefert');
   const total=ords.reduce((a,o)=>a+o.total,0);let body='';
-  if(gtab==='karte')body=karte();
+  if(gtab==='karte')body=(S.set.xmas!==false?'<p class="greet">Frohe Weihnachten und guten Appetit!</p>':'')+karte();
   else if(gtab==='orders')body=ords.length?ords.map(o=>`<div class="ord"><b>${esc(o.name)}</b> · ${ST[o.status]}<ul>${o.lines.map(l=>`<li>${esc(l.t)}<i>${eur(l.price)}</i></li>`).join('')}</ul></div>`).join('')+`<p class="tot">Summe ${eur(total)}</p>`:'<p>Noch nichts bestellt.</p>';
   else body=!ords.length?'<p>Es gibt noch nichts zu bezahlen.</p>':pay?`<p class="tot">Der Kellner kommt zu dir (${esc(pay.method)}).</p>`:`<p class="tot">Offen: ${eur(total)}</p><button class="btn" data-a="pay" data-m="PayPal">PayPal</button><button class="btn" data-a="pay" data-m="Bar">In bar</button><button class="btn" data-a="pay" data-m="Überweisung">Überweisung</button><br><button class="btn ghost" data-a="invoice">Rechnung ansehen</button>`;
   const cnt=cart.reduce((a,l)=>a+l.qty,0);
@@ -254,11 +285,31 @@ const act={
   newitem(){itemForm()},edititem(d){itemForm(byId('items',d.i))},delitem(d){if(confirm('Artikel löschen?'))deleteDoc(doc(db,'items',d.i))},
   newmenu(){menuForm()},editmenu(d){menuForm(byId('menus',d.i))},delmenu(d){if(confirm('Menü löschen?'))deleteDoc(doc(db,'menus',d.i))},
   resetrev(){if(confirm('Einnahmen auf 0 setzen?'))setDoc(doc(db,'settings','main'),{revenue:0},{merge:true})},
-  editset(){const s=S.set;form('Einstellungen',[{k:'name',l:'Name des Restaurants'},{k:'tb',l:'Bearbeitungszeit Bar (Sekunden)',t:'number'},{k:'tk',l:'Bearbeitungszeit Küche (Sekunden)',t:'number'},{k:'tl',l:'Tischnummern (mit Komma trennen)'},{k:'pa',l:'PIN Admin'},{k:'pb',l:'PIN Bar'},{k:'pk',l:'PIN Küche'},{k:'pw',l:'PIN Kellner'}],
-    {name:s.name,tb:s.times.bar,tk:s.times.kueche,tl:s.tables.join(','),pa:s.pins.admin,pb:s.pins.bar,pk:s.pins.kueche,pw:s.pins.kellner},
-    o=>setDoc(doc(db,'settings','main'),{name:o.name,times:{bar:o.tb,kueche:o.tk},tables:o.tl.split(',').map(x=>+x.trim()).filter(Boolean),pins:{admin:o.pa,bar:o.pb,kueche:o.pk,kellner:o.pw}},{merge:true}))}
+  editset(){const s=S.set;form('Einstellungen',[{k:'name',l:'Name des Restaurants'},{k:'tb',l:'Bearbeitungszeit Bar (Sekunden)',t:'number'},{k:'tk',l:'Bearbeitungszeit Küche (Sekunden)',t:'number'},{k:'tl',l:'Tischnummern (mit Komma trennen)'},{k:'xmas',l:'🎄 Weihnachtsdesign (Lichterketten, Schnee)',t:'check'},{k:'pa',l:'PIN Admin'},{k:'pb',l:'PIN Bar'},{k:'pk',l:'PIN Küche'},{k:'pw',l:'PIN Kellner'}],
+    {xmas:s.xmas!==false,name:s.name,tb:s.times.bar,tk:s.times.kueche,tl:s.tables.join(','),pa:s.pins.admin,pb:s.pins.bar,pk:s.pins.kueche,pw:s.pins.kellner},
+    o=>setDoc(doc(db,'settings','main'),{xmas:o.xmas,name:o.name,times:{bar:o.tb,kueche:o.tk},tables:o.tl.split(',').map(x=>+x.trim()).filter(Boolean),pins:{admin:o.pa,bar:o.pb,kueche:o.pk,kellner:o.pw}},{merge:true}))}
 };
 document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(el&&act[el.dataset.a])act[el.dataset.a](el.dataset)});
+function lights(){const w=innerWidth,n=Math.ceil(w/48)+1;let d='M0,6',b='';
+  for(let j=0;j<n;j++){const x=j*48;d+=` Q${x+24},26 ${x+48},6`;b+=`<g class="bulb c${j%4}" style="animation-delay:${(j*.37)%2.4}s"><rect x="${x+21}" y="14" width="6" height="5" fill="#4a4a42"/><ellipse cx="${x+24}" cy="26" rx="5" ry="7"/></g>`}
+  $('#lights').innerHTML=`<svg width="${w}" height="40" aria-hidden="true"><path d="${d}" fill="none" stroke="#2c3a30" stroke-width="1.6"/>${b}</svg>`}
+const cv=$('#snow'),cx=cv.getContext('2d');let fl=[];
+function snowInit(){cv.width=innerWidth;cv.height=innerHeight;fl=Array.from({length:innerWidth<600?35:70},()=>({x:Math.random()*cv.width,y:Math.random()*cv.height,r:1+Math.random()*2.5,v:.4+Math.random()*.9,d:Math.random()*6}))}
+function snow(){cx.clearRect(0,0,cv.width,cv.height);if(musicOn&&!document.body.classList.contains('xmas'))toggleMusic();
+  if(document.body.classList.contains('xmas')&&!matchMedia('(prefers-reduced-motion:reduce)').matches){cx.fillStyle='rgba(255,255,255,.95)';cx.strokeStyle='rgba(90,120,140,.35)';
+    fl.forEach(f=>{f.y+=f.v;f.d+=.02;f.x+=Math.sin(f.d)*.4;if(f.y>cv.height+5)f.y=-5;cx.beginPath();cx.arc(f.x,f.y,f.r,0,7);cx.fill();cx.stroke()})}
+  requestAnimationFrame(snow)}
+snowInit();lights();snow();addEventListener('resize',()=>{snowInit();lights()});
+const JB=[[4,1],[4,1],[4,2],[4,1],[4,1],[4,2],[4,1],[7,1],[12,1.5],[14,.5],[16,4],[17,1],[17,1],[17,1.5],[17,.5],[17,1],[16,1],[16,1],[16,.5],[16,.5],[16,1],[14,1],[14,1],[16,1],[14,2],[7,2]];
+let ac,mus,mt,musicOn=false;
+function playJB(){const m=ac.createGain();m.gain.value=.25;m.connect(ac.destination);mus=m;let t=ac.currentTime+.05;
+  JB.forEach(([n,b])=>{const f=261.63*2**(n/12),d=b*.42;[[1,.6],[2,.2]].forEach(([k,g])=>{const o=ac.createOscillator(),e=ac.createGain();o.frequency.value=f*k;e.gain.setValueAtTime(g,t);e.gain.exponentialRampToValueAtTime(.001,t+Math.max(d,.5)+.4);o.connect(e);e.connect(m);o.start(t);o.stop(t+d+1)});t+=d});
+  mt=setTimeout(playJB,(t-ac.currentTime+1.2)*1000)}
+function toggleMusic(){musicOn=!musicOn;
+  if(musicOn){ac=ac||new(window.AudioContext||window.webkitAudioContext)();ac.resume();playJB()}
+  else{clearTimeout(mt);mus&&mus.gain.setTargetAtTime(0,ac.currentTime,.05)}
+  $('#mus').textContent=musicOn?'🔇':'🎵';$('#mus').setAttribute('aria-pressed',musicOn)}
+$('#mus').onclick=toggleMusic;
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='ci')act.send()});
 function tick(){document.querySelectorAll('.cd').forEach(e=>{const s=Math.round((e.dataset.u-Date.now())/1000);e.textContent=s>0?`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`:'gleich fertig'})}
 setInterval(tick,1000);
